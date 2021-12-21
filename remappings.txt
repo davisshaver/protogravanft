@@ -1,2 +1,3 @@
 @openzeppelin/=lib/openzeppelin-contracts/
 ds-test/=lib/ds-test/src/
+base64-sol/=lib/base64/
