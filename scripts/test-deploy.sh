@@ -9,22 +9,24 @@ set -eo pipefail
 . $(dirname $0)/deploy.sh
 
 # get the address
-addr=$(jq -r '.Greeter' out/addresses.json)
+addr=$(jq -r '.ProtoGravaNFT' out/addresses.json)
 
-# the initial greeting must be empty
-greeting=$(seth call $addr 'greeting()(string)')
-[[ $greeting = "" ]] || error
+echo $addr;
 
-# set it to a value
-seth send $addr \
-    'greet(string memory)' '"yo"' \
-    --keystore $TMPDIR/8545/keystore \
-    --password /dev/null
+# the initial description should be what we expect
+description=$(seth call $addr 'getDescription()(string)')
+[[ $description = "Globally Recognized Avatars on the Ethereum Blockchain" ]] || error
 
-sleep 1
+# # set it to a value
+# seth send $addr \
+#     'greet(string memory)' '"yo"' \
+#     --keystore $TMPDIR/8545/keystore \
+#     --password /dev/null
 
-# should be set afterwards
-greeting=$(seth call $addr 'greeting()(string)')
-[[ $greeting = "yo" ]] || error
+# sleep 1
+
+# # should be set afterwards
+# greeting=$(seth call $addr 'greeting()(string)')
+# [[ $greeting = "yo" ]] || error
 
 echo "Success."

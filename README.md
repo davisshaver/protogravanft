@@ -1,102 +1,32 @@
-# <h1 align="center"> DappTools Template </h1>
+# GravaNFT (Prototype!)
 
-**Template repository for getting started quickly with DappTools**
+## Stack
 
-![Github Actions](https://github.com/gakonst/dapptools-template/workflows/Tests/badge.svg)
+This project is based on [Georgios Konstantopoulos' DappTools template](https://github.com/gakonst/dapptools-template), and therefore will also be cross-compatible with Konstantopoulos' reimplementation of DappTools in Rust ([Foundry](https://github.com/gakonst/foundry)).
 
-## Building and testing
+Currently we use [OpenZeppelin modules](https://openzeppelin.com/) to provide ERC-721 and Merkle tree implementations; however, we hope to switch to [Solmate](https://github.com/Rari-Capital/solmate/) in the future, likely to be a more gas-efficient implementation of ERC-721 and related patterns such as counters. ([See pending Solmate v6 pull request here.](https://github.com/Rari-Capital/solmate/pull/77))
 
-```sh
-git clone https://github.com/gakonst/dapptools-template
-cd dapptools-template
-make # This installs the project's dependencies.
+## Local
+
+If you do not have DappTools already installed, please first [follow the toolkit installation instructions](https://github.com/gakonst/dapptools-template#installing-the-toolkit). **DappTools has compatibility issues with M1 Macs due to GHC compiliation issues on ARM architecture. [See here for workaround details.](https://roycewells.io/writing/dapptools-m1/)**
+
+```
+git clone TK
+cd gravanft
+make
 make test
 ```
 
+At this time you should see passing tests.
+
+You may also want to experiment with [Foundry](https://github.com/gakonst/foundry). Running `forge test` should give you similiar output to `make test`, but at present there is a failing test for the Merkle tree verification due to tests being hard-coded to use the DappTools address (0xEFc56627233b02eA95bAE7e19F648d7DcD5Bb132).
+
+## Merkle Tree Generation
+
+
+https://en.wikipedia.org/wiki/Merkle_tree
+https://medium.com/@ItsCuzzo/using-merkle-trees-for-nft-whitelists-523b58ada3f9
+https://github.com/OpenZeppelin/workshops/blob/master/06-nft-merkle-drop/slides/20210506%20-%20Lazy%20minting%20workshop.pdf
+
 ## Deploying
-
-Contracts can be deployed via the `make deploy` command. Addresses are automatically
-written in a name-address json file stored under `out/addresses.json`.
-
-We recommend testing your deployments and provide an example under [`scripts/test-deploy.sh`](./scripts/test-deploy.sh)
-which will launch a local testnet, deploy the contracts, and do some sanity checks.
-
-Environment variables under the `.env` file are automatically loaded (see [`.env.example`](./.env.example)).
-Be careful of the [precedence in which env vars are read](https://github.com/dapphub/dapptools/tree/2cf441052489625f8635bc69eb4842f0124f08e4/src/dapp#precedence).
-
-We assume `ETH_FROM` is an address you own and is part of your keystore.
-If not, use `ethsign import` to import your private key.
-
-See the [`Makefile`](./Makefile#25) for more context on how this works under the hood
-
-We use Alchemy as a remote node provider for the Mainnet & Rinkeby network deployments.
-You must have set your API key as the `ALCHEMY_API_KEY` enviroment variable in order to
-deploy to these networks
-
-### Mainnet
-
-```
-ETH_FROM=0x3538b6eF447f244268BCb2A0E1796fEE7c45002D make deploy-mainnet
-```
-
-### Rinkeby
-
-```
-ETH_FROM=0x3538b6eF447f244268BCb2A0E1796fEE7c45002D make deploy-rinkeby
-```
-
-### Custom Network
-
-```
-ETH_RPC_URL=<your network> make deploy
-```
-
-### Local Testnet
-
-```
-# on one terminal
-dapp testnet
-# get the printed account address from the testnet, and set it as ETH_FROM. Then:
-make deploy
-```
-
-### Verifying on Etherscan
-
-After deploying your contract you can verify it on Etherscan using:
-
-```
-ETHERSCAN_API_KEY=<api-key> contract_address=<address> network_name=<mainnet|rinkeby|...> make verify
-```
-
-Check out the [dapp documentation](https://github.com/dapphub/dapptools/tree/master/src/dapp#dapp-verify-contract) to see how
-verifying contracts work with DappTools.
-
-## Installing the toolkit
-
-If you do not have DappTools already installed, you'll need to run the below
-commands
-
-### Install Nix
-
-```sh
-# User must be in sudoers
-curl -L https://nixos.org/nix/install | sh
-
-# Run this or login again to use Nix
-. "$HOME/.nix-profile/etc/profile.d/nix.sh"
-```
-
-### Install DappTools
-
-```sh
-curl https://dapp.tools/install | sh
-```
-
-## DappTools Resources
-
-* [DappTools](https://dapp.tools)
-    * [Hevm Docs](https://github.com/dapphub/dapptools/blob/master/src/hevm/README.md)
-    * [Dapp Docs](https://github.com/dapphub/dapptools/tree/master/src/dapp/README.md)
-    * [Seth Docs](https://github.com/dapphub/dapptools/tree/master/src/seth/README.md)
-* [DappTools Overview](https://www.youtube.com/watch?v=lPinWgaNceM)
-* [Awesome-DappTools](https://github.com/rajivpo/awesome-dapptools)
+For network deployments, you will need to setup your keystore as well as configure an RPC URL or a Alchemy API key. [Please see the DappTools template for additional setup details on deploying.](https://github.com/gakonst/dapptools-template#deploying) 

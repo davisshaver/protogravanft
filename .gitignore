@@ -4,3 +4,8 @@ node_modules
 # Dapptools
 out/
 .env
+.env.local
+cache/
+
+# Yarn
+yarn-error.log

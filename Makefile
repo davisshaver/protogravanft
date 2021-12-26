@@ -34,6 +34,8 @@ deploy-mainnet: check-api-key deploy
 deploy-rinkeby: export ETH_RPC_URL = $(call network,rinkeby)
 deploy-rinkeby: check-api-key deploy
 
+deploy-test :; ./scripts/test-deploy.sh
+
 # verify on Etherscan
 verify:; ETH_RPC_URL=$(call network,$(network_name)) dapp verify-contract src/Greeter.sol:Greeter $(contract_address)
 

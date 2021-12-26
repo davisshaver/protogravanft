@@ -4,6 +4,10 @@
   "license": "Unlicense",
   "version": "1.0.0",
   "description": "A template for building dapptools projects",
+  "engines": {
+    "npm": "please-use-yarn",
+    "yarn": ">= 1.22.17"
+  },
   "files": [
     "*.sol"
   ],
@@ -16,6 +20,8 @@
     "solhint-plugin-prettier": "^0.0.5"
   },
   "scripts": {
+    "allowlist:test": "node scripts/generate-merkle-tree.js",
+    "allowlist": "node scripts/generate-merkle-tree.js prod",
     "prepublishOnly": "copyfiles -u 1 \"./src/**/*.sol\" --exclude \"./src/test/**/*.sol\" ./",
     "postpublish": "rimraf ./*.sol",
     "prepack": "yarn prepublishOnly",
@@ -26,5 +32,10 @@
     "prettier:check": "prettier --check \"src/**/*.sol\"",
     "solhint": "yarn solhint:check --fix",
     "solhint:check": "solhint --config ./.solhint.json \"src/**/*.sol\""
+  },
+  "dependencies": {
+    "keccak256": "^1.0.6",
+    "merkletreejs": "^0.2.27",
+    "web3": "^1.6.1"
   }
 }
