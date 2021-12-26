@@ -17,6 +17,23 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
     string internal gravatarHashOne = "60f9fcb4b3cc5e3add081dd95d4a3705";
     string internal gravatarHashTwo = "TK";
 
+    function testGetDescription() public view {
+        require(
+            keccak256(abi.encodePacked(protogravanft.getDescription())) ==
+                keccak256(abi.encodePacked(Defaults.DefaultDescription)),
+            "Description is not set correctly"
+        );
+    }
+
+    function testGetDefaultForDefaultImage() public view {
+        require(
+            keccak256(
+                abi.encodePacked(protogravanft.getDefaultImageFormat())
+            ) == keccak256(abi.encodePacked(Defaults.DefaultForDefaultImage)),
+            "Default image format is not set correctly"
+        );
+    }
+
     function testNonOwnerCannotUseOwnerMint() public {
         try bob.ownerMint(gravatarHashOne) {
             fail();

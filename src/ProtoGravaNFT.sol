@@ -155,7 +155,10 @@ contract ProtoGravaNFT is ERC721URIStorage, Ownable {
     }
 
     /// @dev Update the description for future tokens.
-    function ownerSetDescription(string calldata _description) public onlyOwner {
+    function ownerSetDescription(string calldata _description)
+        public
+        onlyOwner
+    {
         description = _description;
     }
 
