@@ -1,5 +1,17 @@
 # GravaNFT (Prototype!)
 
+## TODOs
+
+- Test on Kovan network with verified source
+- Improve test coverage for Merkle tree implementation
+- Automate generation of Merkle trees for different networks
+- Automate deployment for different networks
+- Add event emissions for differnt actions
+- Close-read code comments and enhance/expand
+- Add .sethrc to repo docs/ignore from git
+- Document differences between Foundry and DappTools
+- estimate gas while passing constructor arguments too
+
 ## Stack
 
 This project is based on [Georgios Konstantopoulos' DappTools template](https://github.com/gakonst/dapptools-template), and therefore will also be cross-compatible with Konstantopoulos' reimplementation of DappTools in Rust ([Foundry](https://github.com/gakonst/foundry)).
@@ -30,3 +42,15 @@ https://github.com/OpenZeppelin/workshops/blob/master/06-nft-merkle-drop/slides/
 
 ## Deploying
 For network deployments, you will need to setup your keystore as well as configure an RPC URL or a Alchemy API key. [Please see the DappTools template for additional setup details on deploying.](https://github.com/gakonst/dapptools-template#deploying) 
+
+dapp create ProtoGravaNFT '"ProtoGravaNFT"' '"PROTOGRAV"' 0x5ba39d6a23933f83b06f5f4439d7eb891dbbc59250ff8f3109fd821802847b23 -- --gas "5000000" --rpc-url "https://optimism-kovan.infura.io/v3/e94089d24a0247b690a22f0c842b371c" --from 0x0F545f9be53fA596aF36baf231663D16E8C66911 --keystore ~/.ethereum/keystore --password $PWD/pass
+
+https://community.optimism.io/docs/infra/networks.html#optimism-kovan-testnet
+
+https://kovan-optimistic.etherscan.io/address/0xca3cb82a586eed2e0b394cc6c4fdf1c908aea94a#code
+
+UPDATE DAPP TOOLS
+
+https://github.com/dapphub/dapptools
+
+https://dashboard.alchemyapi.io/apps/wgibtdyviy0yibu7
