@@ -13,25 +13,25 @@
   ],
   "devDependencies": {
     "copyfiles": "^2.4.1",
-    "prettier": "^2.4.1",
     "prettier-plugin-solidity": "^1.0.0-beta.18",
+    "prettier": "^2.4.1",
     "rimraf": "^3.0.2",
-    "solhint": "^3.3.6",
-    "solhint-plugin-prettier": "^0.0.5"
+    "solhint-plugin-prettier": "^0.0.5",
+    "solhint": "^3.3.6"
   },
   "scripts": {
     "allowlist:test": "node scripts/generate-merkle-tree.js",
     "allowlist": "node scripts/generate-merkle-tree.js prod",
-    "prepublishOnly": "copyfiles -u 1 \"./src/**/*.sol\" --exclude \"./src/test/**/*.sol\" ./",
+    "lint:check": "yarn prettier:check && yarn solhint:check",
+    "lint": "yarn prettier && yarn solhint",
+    "postpack": "yarn postpublish",
     "postpublish": "rimraf ./*.sol",
     "prepack": "yarn prepublishOnly",
-    "postpack": "yarn postpublish",
-    "lint": "yarn prettier && yarn solhint",
-    "lint:check": "yarn prettier:check && yarn solhint:check",
-    "prettier": "yarn prettier:check --write",
+    "prepublishOnly": "copyfiles -u 1 \"./src/**/*.sol\" --exclude \"./src/test/**/*.sol\" ./",
     "prettier:check": "prettier --check \"src/**/*.sol\"",
-    "solhint": "yarn solhint:check --fix",
-    "solhint:check": "solhint --config ./.solhint.json \"src/**/*.sol\""
+    "prettier": "yarn prettier:check --write",
+    "solhint:check": "solhint --config ./.solhint.json \"src/**/*.sol\"",
+    "solhint": "yarn solhint:check --fix"
   },
   "dependencies": {
     "keccak256": "^1.0.6",
