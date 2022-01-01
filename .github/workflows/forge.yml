@@ -1,10 +1,14 @@
-on:
-  push:
-    branches:
-      - main
-  pull_request:
+on: push
 
 name: Unit Tests
+
+defaults:
+  run:
+    shell: bash
+      
+env:
+  CI: true
+  FORCE_COLOR: 2
 
 jobs:
   tests:
