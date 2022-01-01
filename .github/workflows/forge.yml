@@ -19,19 +19,12 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Install libusb (needed to hw wallet support on Forge/Cast)
-        run: sudo apt update && sudo apt install pkg-config libudev-dev
-
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: stable
           override: true
-
-      - uses: Swatinem/rust-cache@v1
-        with:
-          cache-on-failure: true
 
       - name: Cache Forge
         id: cache-forge
