@@ -1,60 +1,44 @@
-// SPDX-License-Identifier: Unlicense
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: AGPL-3.0-only
+pragma solidity ^0.8.10;
+
+/// ============ External Imports ============
+
 import "ds-test/test.sol";
 
+/// ============ Internal Imports ============
+
 import "../../ProtoGravaNFT.sol";
-
-contract User {
-    ProtoGravaNFT internal protogravanft;
-
-    constructor(address _protogravanft) {
-        protogravanft = ProtoGravaNFT(_protogravanft);
-    }
-
-    function getAddress() public view returns (address) {
-        return address(this);
-    }
-
-    function ownerMint(string memory gravatarHash) public returns (uint256) {
-        return
-            protogravanft.ownerMint(gravatarHash, gravatarHash, address(this));
-    }
-
-    function publicMint(string memory gravatarHash, bytes32[] memory _proof)
-        public
-        returns (uint256)
-    {
-        return protogravanft.publicMint(gravatarHash, gravatarHash, _proof);
-    }
-
-    function formatTokenURI(
-        string memory gravatarHash,
-        string memory gravatarName
-    ) public view returns (string memory) {
-        return
-            protogravanft.formatTokenURI(
-                gravatarHash,
-                gravatarName,
-                "Globally Recognized Avatars on the Ethereum Blockchain",
-                "robohash"
-            );
-    }
-}
+import "./ProtoGravaNFTUser.sol";
 
 abstract contract ProtoGravaNFTTest is DSTest {
-    ProtoGravaNFT internal protogravanft;
+    /// ============ Storage ============
 
-    User internal alice;
-    User internal bob;
+    /// @dev ProtoGravaNFT contract
+    ProtoGravaNFT internal protogravanft;
+    /// @dev User: Alice (in Merkle tree)
+    ProtoGravaNFTUser internal alice;
+    /// @dev User: Alice (NOT in merkle tree)
+    ProtoGravaNFTUser internal bob;
 
     function setUp() public virtual {
         protogravanft = new ProtoGravaNFT(
             "ProtoGravaNFT",
             "PROTOGRAV",
-            0x31ec1fc12927b46ccb39c33438bcb5206998698ffe2c5356f6b3c16be0b989fd
+            // Merkle root w/ Alice & Gravatar hash 60f9...3705 but no BOB
+            0x203a4d8e6ceef6b0b9e14b36d43263fe81b2c4499fc17c6e04dbcf32a3728b19
         );
-        alice = new User(address(protogravanft));
-        bob = new User(address(protogravanft));
-        protogravanft.transferOwnership(address(alice));
+        alice = new ProtoGravaNFTUser(protogravanft); // 0x109F93893aF4C4b0afC7A9e97B59991260F98313
+        bob = new ProtoGravaNFTUser(protogravanft); // 0x689856e2a6eb68fc33099eb2ccba0a5a4e8be52f
+    }
+
+    /// @notice Generates a Gravatar image URI
+    /// @param gravatarHash for this specific token URI
+    /// @param name for this specific token URI
+    function formatTokenURI(string memory gravatarHash, string memory name)
+        public
+        view
+        returns (string memory)
+    {
+        return protogravanft.formatTokenURI(gravatarHash, name);
     }
 }

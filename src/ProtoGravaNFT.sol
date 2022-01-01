@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.10;
 
 /// ============ External Imports ============
@@ -81,9 +81,9 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
     }
 
     /// @notice Generates a Gravatar image URI for token
-    /// @param hash for this specific token
+    /// @param gravatarHash for this specific token
     /// @param name for this specific token
-    function formatTokenURI(string memory hash, string memory name)
+    function formatTokenURI(string memory gravatarHash, string memory name)
         public
         view
         returns (string memory)
@@ -96,15 +96,15 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
                         abi.encodePacked(
                             bytes(
                                 abi.encodePacked(
-                                    "{'name':'",
+                                    "{\"name\": \"",
                                     name,
-                                    "', 'description': '",
+                                    "\", \"description\": \"",
                                     description,
-                                    "', 'image': '//secure.gravatar.com/avatar/",
-                                    hash,
+                                    "\", \"image\": \"//secure.gravatar.com/avatar/",
+                                    gravatarHash,
                                     "?s=2048&d=",
                                     defaultFormat,
-                                    "'}"
+                                    "\"}"
                                 )
                             )
                         )
