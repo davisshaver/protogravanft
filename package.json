@@ -31,7 +31,8 @@
     "prettier:check": "prettier --check \"src/**/*.sol\"",
     "prettier": "yarn prettier:check --write",
     "solhint:check": "solhint --config ./.solhint.json \"src/**/*.sol\"",
-    "solhint": "yarn solhint:check --fix"
+    "solhint": "yarn solhint:check --fix",
+    "test": "forge test --root . --verbosity 4"
   },
   "dependencies": {
     "ethers": "^5.5.2",
