@@ -10,3 +10,6 @@ cache/
 
 # Yarn
 yarn-error.log
+
+# OS X
+.DS_Store
