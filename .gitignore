@@ -1,15 +1,15 @@
+# Misc
+.DS_Store
+
+# Contracts
+out/
+cache/
+
 # Node
 node_modules
 
-# Dapptools
-out/
-.env
-.env.local
-cache/
-.sethrc
+# Proofs
+proofs/*.json
 
 # Yarn
 yarn-error.log
-
-# OS X
-.DS_Store

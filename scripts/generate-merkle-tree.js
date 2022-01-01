@@ -42,7 +42,7 @@ const proofs = Object.entries(allowlist[environment]).map(entry => ({
 }));
 
 // Define output path for Merkle tree data based on environment.
-const outputPath = `${__dirname}/../proofs/${environment}/proofs.json`;
+const outputPath = `${__dirname}/../proofs/${environment}.json`;
 
 // Output Merkle tree data.
 fs.writeFileSync(
