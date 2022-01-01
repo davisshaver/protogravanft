@@ -2,7 +2,7 @@ const { MerkleTree } = require('merkletreejs');
 const fs = require('fs');
 const keccak256 = require('keccak256');
 const path = require('path');
-const Web3 = require('web3');
+const { getAddress, solidityKeccak256 } = require('ethers/lib/utils');
 
 const allowlist = require('../config/allowlist.json');
 
@@ -16,15 +16,9 @@ const environment = process.argv[2] === "prod" ? "prod" : "dev";
  * @returns {Buffer} Hex buffer of sha3 hash.
  */
 function generateHash(gravatarHash, account) {
-    return Buffer.from(Web3.utils.soliditySha3(
-        {
-            type: 'string',
-            value: gravatarHash
-        },
-        {
-            type: 'address',
-            value: account
-        }
+    return Buffer.from(solidityKeccak256(
+        ['string', 'address'],
+        [gravatarHash, getAddress(account)]
     ).slice(2), 'hex');
 }
 

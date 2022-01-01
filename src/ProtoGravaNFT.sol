@@ -80,6 +80,7 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
         merkleRoot = _merkleRoot;
     }
 
+    /* solhint-disable quotes */
     /// @notice Generates a Gravatar image URI for token
     /// @param gravatarHash for this specific token
     /// @param name for this specific token
@@ -96,15 +97,15 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
                         abi.encodePacked(
                             bytes(
                                 abi.encodePacked(
-                                    "{\"name\": \"",
+                                    '{"name": "',
                                     name,
-                                    "\", \"description\": \"",
+                                    '", "description": "',
                                     description,
-                                    "\", \"image\": \"//secure.gravatar.com/avatar/",
+                                    '", "image": "//secure.gravatar.com/avatar/',
                                     gravatarHash,
                                     "?s=2048&d=",
                                     defaultFormat,
-                                    "\"}"
+                                    '"}'
                                 )
                             )
                         )
@@ -112,6 +113,8 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
                 )
             );
     }
+
+    /* solhint-enable quotes */
 
     /// @notice Mint a token
     /// @param name of token being minted
