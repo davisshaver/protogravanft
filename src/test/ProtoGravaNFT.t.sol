@@ -152,7 +152,7 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
     }
 
     /// @notice Ensure that token URI is updated after description change
-    function testAliceMintTokenURIUpdatedDescriptionFormat() public {
+    function testFailAliceMintTokenURIUpdatedDescriptionFormat() public {
         string memory aliceTokenName = "Alice's Gravatar NFT";
         alice.mint(aliceTokenName, approvedGravatarHash, correctProof);
         string memory aliceTokenURIPre = protogravanft.tokenURI(1);
