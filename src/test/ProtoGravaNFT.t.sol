@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "ds-test/test.sol";
 import "./utils/ProtoGravaNFTTest.sol";
-import {Defaults, Errors} from "../ProtoGravaNFT.sol";
+import {Defaults} from "../ProtoGravaNFT.sol";
 
 contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
     bytes32[] internal proof = [

@@ -4,8 +4,8 @@ pragma solidity ^0.8.10;
 /// ============ External Imports ============
 
 import "base64-sol/base64.sol";
-import "openzeppelin/contracts/utils/Counters.sol";
-import "openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "solmate/tokens/ERC721.sol";
 
 /// ============ Internal Imports ============
