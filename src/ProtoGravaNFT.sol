@@ -1,13 +1,18 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.10;
 
-// Open Zeppelin modules and other libraries.
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/utils/Counters.sol"; // Sorry @transmissions11
-import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+/// ============ External Imports ============
+
 import "base64-sol/base64.sol";
+import "openzeppelin/contracts/utils/Counters.sol";
+import "openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import "solmate/tokens/ERC721.sol";
+
+/// ============ Internal Imports ============
+
+import "./LilOwnable.sol";
+
+/// ============ Defaults ============
 
 library Defaults {
     string internal constant DefaultDescription =
@@ -15,46 +20,74 @@ library Defaults {
     string internal constant DefaultForDefaultImage = "robohash";
 }
 
-library Errors {
-    string internal constant ErrorUnauthorizedHash = "address/hash invalid";
-    string internal constant ErrorHashAlreadyUsed = "hash already used";
-}
-
-contract ProtoGravaNFT is ERC721URIStorage, Ownable {
+/// @title ProtoGravaNFT
+/// @notice Gravatar-powered ERC721 claimable by members of a Merkle tree
+/// @author Davis Shaver <davisshaver@gmail.com>
+contract ProtoGravaNFT is ERC721, LilOwnable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    /// @dev Mapping of hashes to addresses for usage tracking.
-    /// @dev TODO: Try to map hashes to unique integers for use as token ID.
-    mapping(string => address) private gravUses;
+    /// ============ Events ============
 
-    /// @dev Merkle root to verify an address' claim for a specific hash.
+    /// @notice Emitted after a successful mint
+    /// @param to which address
+    /// @param hash that was claimed
+    /// @param name that was used
+    event Mint(address indexed to, string hash, string name);
+
+    /// ============ Errors ============
+
+    /// @notice Thrown if a non-existent token is queried
+    error DoesNotExist();
+    /// @notice Thrown if unauthorized user tries to burn token
+    error NotAuthorized();
+    /// @notice Thrown if address/hash are not part of Merkle tree
+    error NotInMerkle();
+
+    /// ============ Mutable Storage ============
+
+    /// @notice Mapping of ids to hashes
+    mapping(uint256 => string) private gravIDsToHashes;
+
+    /// @notice Mapping of ids to names
+    mapping(uint256 => string) private gravIDsToNames;
+
+    /// @notice Mapping of addresses to hashes
+    mapping(address => string) private gravOwnersToHashes;
+
+    /// @notice Merkle root
     bytes32 public merkleRoot;
 
-    /// @dev Default fallback image for tokens minted in future blocks.
+    /// @notice Default fallback image
     string public defaultFormat;
 
-    /// @dev Description for tokens minted in future blocks.
+    /// @notice Description
     string public description;
 
-    /// @dev Buckle up!
+    /// ============ Constructor ============
+
+    /// @notice Creates a new ProtoGravaNFT contract
+    /// @param _name of token
+    /// @param _symbol of token
+    /// @param _merkleRoot of claimees
     constructor(
-        string memory name,
-        string memory symbol,
+        string memory _name,
+        string memory _symbol,
         bytes32 _merkleRoot
-    ) ERC721(name, symbol) {
+    ) ERC721(_name, _symbol) {
         defaultFormat = Defaults.DefaultForDefaultImage;
         description = Defaults.DefaultDescription;
         merkleRoot = _merkleRoot;
     }
 
-    /// @dev Helper function to format a base64 URI for token.
-    function formatTokenURI(
-        string calldata gravHash,
-        string calldata gravName,
-        string memory gravDescription,
-        string memory gravDefault
-    ) public pure returns (string memory) {
+    /// @notice Generates a Gravatar image URI for token
+    /// @param hash for this specific token
+    /// @param name for this specific token
+    function formatTokenURI(string memory hash, string memory name)
+        public
+        view
+        returns (string memory)
+    {
         return
             string(
                 abi.encodePacked(
@@ -64,13 +97,13 @@ contract ProtoGravaNFT is ERC721URIStorage, Ownable {
                             bytes(
                                 abi.encodePacked(
                                     "{'name':'",
-                                    gravName,
+                                    name,
                                     "', 'description': '",
-                                    gravDescription,
+                                    description,
                                     "', 'image': '//secure.gravatar.com/avatar/",
-                                    gravHash,
+                                    hash,
                                     "?s=2048&d=",
-                                    gravDefault,
+                                    defaultFormat,
                                     "'}"
                                 )
                             )
@@ -80,98 +113,81 @@ contract ProtoGravaNFT is ERC721URIStorage, Ownable {
             );
     }
 
-    /// @dev Internal function to mint token w/ name, hash, and recipient.
+    /// @notice Mint a token
+    /// @param name of token being minted
+    /// @param gravatarHash of token being minted
+    /// @param proof of Gravatar hash ownership
     function mint(
-        string calldata gravName,
-        string calldata gravHash,
-        address gravRecipient
-    ) private returns (uint256) {
-        require(gravUses[gravHash] == address(0), Errors.ErrorHashAlreadyUsed);
-        string memory gravTokenURI = formatTokenURI(
-            gravName,
-            gravHash,
-            description,
-            defaultFormat
-        );
+        string calldata name,
+        string calldata gravatarHash,
+        bytes32[] calldata proof
+    ) external {
+        bytes32 leaf = keccak256(abi.encodePacked(gravatarHash, msg.sender));
+        bool isValidLeaf = MerkleProof.verify(proof, merkleRoot, leaf);
+        if (!isValidLeaf) revert NotInMerkle();
+
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
-        _mint(gravRecipient, newItemId);
-        _setTokenURI(newItemId, gravTokenURI);
-        gravUses[gravHash] = gravRecipient;
-        return newItemId;
+
+        gravIDsToHashes[newItemId] = gravatarHash;
+        gravIDsToNames[newItemId] = name;
+
+        _mint(msg.sender, newItemId);
+
+        emit Mint(msg.sender, gravatarHash, name);
     }
 
-    /// @dev Generates leaf for adress and hash pair.
-    function _leaf(address account, string calldata gravHash)
-        internal
-        pure
-        returns (bytes32)
-    {
-        return keccak256(abi.encodePacked(gravHash, account));
+    /// @notice Gets URI for a specific token
+    /// @param id of token being queried
+    function tokenURI(uint256 id) public view override returns (string memory) {
+        if (ownerOf[id] == address(0)) revert DoesNotExist();
+
+        return formatTokenURI(gravIDsToHashes[id], gravIDsToNames[id]);
     }
 
-    /// @dev Verifies leaf and proof against Merkle tree root.
-    function _verify(bytes32 leaf, bytes32[] calldata proof)
-        internal
-        view
-        returns (bool)
-    {
-        return MerkleProof.verify(proof, merkleRoot, leaf);
-    }
-
-    /// @dev Allow public to mint tokens for hashes mapped to their wallet.
-    function publicMint(
-        string calldata gravName,
-        string calldata gravHash,
-        bytes32[] calldata _proof
-    ) public returns (uint256) {
-        require(
-            _verify(_leaf(msg.sender, gravHash), _proof),
-            Errors.ErrorUnauthorizedHash
-        );
-        return mint(gravName, gravHash, msg.sender);
-    }
-
-    /// @dev Allow owners to mint any address a token for any unused hash.
-    function ownerMint(
-        string calldata gravName,
-        string calldata gravHash,
-        address gravRecipient
-    ) public onlyOwner returns (uint256) {
-        return
-            mint(
-                gravName,
-                gravHash,
-                gravRecipient == address(0) ? msg.sender : gravRecipient
-            );
-    }
-
-    /// @dev Update default Gravatar image format for future tokens.
-    function ownerSetDefaultFormat(string calldata _defaultFormat)
-        public
-        onlyOwner
-    {
+    /// @notice Update default Gravatar image format for future tokens
+    /// @param _defaultFormat for Gravatar image API
+    function ownerSetDefaultFormat(string calldata _defaultFormat) public {
+        if (msg.sender != _owner) revert NotOwner();
         defaultFormat = _defaultFormat;
     }
 
-    /// @dev Update the description for future tokens.
-    function ownerSetDescription(string calldata _description)
-        public
-        onlyOwner
-    {
+    /// @notice Update default Gravatar image format for future tokens
+    /// @param _description for tokens
+    function ownerSetDescription(string calldata _description) public {
+        if (msg.sender != _owner) revert NotOwner();
         description = _description;
     }
 
-    /// @dev Update the Merkle root for future tokens.
-    function ownerSetMerkleRoot(bytes32 _merkleRoot) public onlyOwner {
+    /// @notice Set a new Merkle root
+    /// @param _merkleRoot for validating claims
+    function ownerSetMerkleRoot(bytes32 _merkleRoot) public {
+        if (msg.sender != _owner) revert NotOwner();
         merkleRoot = _merkleRoot;
     }
 
+    /// @notice Get the description
     function getDescription() public view returns (string memory) {
         return description;
     }
 
+    /// @notice Get the default image format
     function getDefaultImageFormat() public view returns (string memory) {
         return defaultFormat;
+    }
+
+    /// @notice Declare supported interfaces
+    /// @param interfaceId for support check
+    function supportsInterface(bytes4 interfaceId)
+        public
+        pure
+        override(LilOwnable, ERC721)
+        returns (bool)
+    {
+        return
+            interfaceId == 0x7f5828d0 || // ERC165 Interface ID for ERC173
+            interfaceId == 0x80ac58cd || // ERC165 Interface ID for ERC721
+            interfaceId == 0x5b5e139f || // ERC165 Interface ID for ERC165
+            interfaceId == 0x01ffc9a7; // ERC165 Interface ID for ERC721Metadata
     }
 }
