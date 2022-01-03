@@ -5,6 +5,9 @@
 out/
 cache/
 
+# Environment
+.env
+
 # Node
 node_modules
 
