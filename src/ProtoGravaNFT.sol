@@ -4,7 +4,6 @@ pragma solidity ^0.8.10;
 /// ============ External Imports ============
 
 import "base64-sol/base64.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "solmate/tokens/ERC721.sol";
 
@@ -24,8 +23,8 @@ library Defaults {
 /// @notice Gravatar-powered ERC721 claimable by members of a Merkle tree
 /// @author Davis Shaver <davisshaver@gmail.com>
 contract ProtoGravaNFT is ERC721, LilOwnable {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
+    uint256 public constant TOTAL_SUPPLY = type(uint256).max - 1;
+    uint256 public totalSupply;
 
     /// ============ Events ============
 
@@ -41,6 +40,8 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
     error DoesNotExist();
     /// @notice Thrown if unauthorized user tries to burn token
     error NotAuthorized();
+    /// @notice Thrown if total supply is exceeded
+    error NoTokensLeft();
     /// @notice Thrown if address/hash are not part of Merkle tree
     error NotInMerkle();
 
@@ -125,13 +126,13 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
         string calldata gravatarHash,
         bytes32[] calldata proof
     ) external {
+        if (totalSupply + 1 >= TOTAL_SUPPLY) revert NoTokensLeft();
+
         bytes32 leaf = keccak256(abi.encodePacked(gravatarHash, msg.sender));
         bool isValidLeaf = MerkleProof.verify(proof, merkleRoot, leaf);
         if (!isValidLeaf) revert NotInMerkle();
 
-        _tokenIds.increment();
-        uint256 newItemId = _tokenIds.current();
-
+        uint256 newItemId = totalSupply++;
         gravIDsToHashes[newItemId] = gravatarHash;
         gravIDsToNames[newItemId] = name;
 
