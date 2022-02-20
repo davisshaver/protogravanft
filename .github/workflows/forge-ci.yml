@@ -19,24 +19,10 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
+      - name: Install Foundry
+        uses: onbjerg/foundry-toolchain@v1
         with:
-          profile: minimal
-          toolchain: stable
-          override: true
-
-      - name: Cache Forge
-        id: cache-forge
-        uses: actions/cache@v2
-        with:
-          path: ~/.cargo/bin/forge
-          key: cache-forge
-
-      - name: Install Forge
-        if: steps.cache-forge.outputs.cache-hit != 'true'
-        run: |
-          cargo install --git https://github.com/gakonst/foundry --bin forge --locked
+          version: nightly
 
       - name: Run tests
         run: forge test --root . --verbosity 4
