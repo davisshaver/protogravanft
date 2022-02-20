@@ -1,1 +1,1 @@
-# GravaNFT
+# GravaNFT (Prototype!)

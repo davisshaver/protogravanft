@@ -85,6 +85,7 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
     /// @notice Generates a Gravatar image URI for token
     /// @param gravatarHash for this specific token
     /// @param name for this specific token
+    /// @return Token URI
     function formatTokenURI(string memory gravatarHash, string memory name)
         public
         view
@@ -143,6 +144,7 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
 
     /// @notice Gets URI for a specific token
     /// @param id of token being queried
+    /// @return Token URI
     function tokenURI(uint256 id) public view override returns (string memory) {
         if (ownerOf[id] == address(0)) revert DoesNotExist();
 
@@ -171,17 +173,20 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
     }
 
     /// @notice Get the description
+    /// @return Description
     function getDescription() public view returns (string memory) {
         return description;
     }
 
     /// @notice Get the default image format
+    /// @return Default image format
     function getDefaultImageFormat() public view returns (string memory) {
         return defaultFormat;
     }
 
     /// @notice Declare supported interfaces
     /// @param interfaceId for support check
+    /// @return Boolean for interface support
     function supportsInterface(bytes4 interfaceId)
         public
         pure
