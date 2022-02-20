@@ -1,9 +1,9 @@
 {
-  "name": "dapptools-template",
-  "author": "Georgios Konstantopoulos",
+  "name": "gravanft",
+  "author": "Davis Shaver",
   "license": "Unlicense",
   "version": "1.0.0",
-  "description": "A template for building dapptools projects",
+  "description": "NFT adapter for Gravatars",
   "engines": {
     "npm": "please-use-yarn",
     "yarn": ">= 1.22.17"
@@ -12,30 +12,26 @@
     "*.sol"
   ],
   "devDependencies": {
-    "copyfiles": "^2.4.1",
     "prettier-plugin-solidity": "^1.0.0-beta.18",
     "prettier": "^2.4.1",
-    "rimraf": "^3.0.2",
     "solhint-plugin-prettier": "^0.0.5",
     "solhint": "^3.3.6"
   },
   "scripts": {
     "allowlist:test": "node scripts/generate-merkle-tree.js",
     "allowlist": "node scripts/generate-merkle-tree.js prod",
+    "chain": "npx hardhat node",
     "lint:check": "yarn prettier:check && yarn solhint:check",
     "lint": "yarn prettier && yarn solhint",
-    "postpack": "yarn postpublish",
-    "postpublish": "rimraf ./*.sol",
-    "prepack": "yarn prepublishOnly",
-    "prepublishOnly": "copyfiles -u 1 \"./src/**/*.sol\" --exclude \"./src/test/**/*.sol\" ./",
     "prettier:check": "prettier --check \"src/**/*.sol\"",
     "prettier": "yarn prettier:check --write",
     "solhint:check": "solhint --config ./.solhint.json \"src/**/*.sol\"",
     "solhint": "yarn solhint:check --fix",
-    "test": "forge test --root . --verbosity 4"
+    "test": "forge test"
   },
   "dependencies": {
     "ethers": "^5.5.2",
+    "hardhat": "^2.8.0",
     "keccak256": "^1.0.6",
     "merkletreejs": "^0.2.27"
   }

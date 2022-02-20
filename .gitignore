@@ -8,6 +8,13 @@ cache/
 # Environment
 .env
 
+# Frontend
+frontend/.env.local
+frontend/node_modules
+frontend/out
+frontend/.next
+frontend/.vercel
+
 # Node
 node_modules
 
