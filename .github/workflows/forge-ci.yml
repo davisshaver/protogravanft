@@ -25,4 +25,4 @@ jobs:
           version: nightly
 
       - name: Run tests
-        run: forge test --root . --verbosity 4
+        run: forge test -vvvvv
