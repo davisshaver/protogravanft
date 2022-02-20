@@ -20,7 +20,6 @@
   "scripts": {
     "allowlist:test": "node scripts/generate-merkle-tree.js",
     "allowlist": "node scripts/generate-merkle-tree.js prod",
-    "chain": "npx hardhat node",
     "lint:check": "yarn prettier:check && yarn solhint:check",
     "lint": "yarn prettier && yarn solhint",
     "prettier:check": "prettier --check \"src/**/*.sol\"",
@@ -31,7 +30,6 @@
   },
   "dependencies": {
     "ethers": "^5.5.2",
-    "hardhat": "^2.8.0",
     "keccak256": "^1.0.6",
     "merkletreejs": "^0.2.27"
   }
