@@ -1,21 +1,21 @@
 # GravaNFT (Prototype!)
 
-## Testing Deployment
+## Deploying to Optimism
 
-### Forge Create
-
-```
-forge create --constructor-args "ProtoGravaNFT" "PROTOGRAV" "0x5ba39d6a23933f83b06f5f4439d7eb891dbbc59250ff8f3109fd821802847b23" --rpc-url https://optimism-kovan.infura.io/v3/<YOUR_API_KEY> --private-key <YOUR_PRIVATE_KEY> src/ProtoGravaNFT.sol:ProtoGravaNFT
-```
-
-### Forge Verify
+### Create
 
 ```
-ETH_RPC_URL=https://optimism-kovan.infura.io/v3/<YOUR_API_KEY> ETHERSCAN_API_KEY=<YOUR_API_KEY> forge verify-contract --constructor-args $(cast abi-encode "constructor(string,string,bytes32)" "ProtoGravaNFT" "PROTOGRAV" "0x5ba39d6a23933f83b06f5f4439d7eb891dbbc59250ff8f3109fd821802847b23") --compiler-version v0.8.10+commit.fc410830 --chain-id 69 --optimize --optimize-runs 1000000 <ADDRESS_FROM_LAST_STEP> './src/ProtoGravaNFT.sol:ProtoGravaNFT' 
+forge create --optimize --optimize-runs 1000000 --rpc-url https://optimism-mainnet.infura.io/v3/<INFURA_API_KEY> --constructor-args "ProtoGravaNFT" "PROTOGRAV" 0x5ba39d6a23933f83b06f5f4439d7eb891dbbc59250ff8f3109fd821802847b23 --private-key <YOUR_PRIVATE_KEY> src/ProtoGravaNFT.sol:ProtoGravaNFT
 ```
 
-### Forge Verify Check
+### Verify
 
 ```
-ETHERSCAN_API_KEY=<YOUR_API_KEY> forge verify-check <GUID_FROM_LAST_STEP> --chain-id 69
+forge verify-contract --chain-id 10 --num-of-optimizations 1000000 --constructor-args 0x000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a05ba39d6a23933f83b06f5f4439d7eb891dbbc59250ff8f3109fd821802847b23000000000000000000000000000000000000000000000000000000000000000d50726f746f47726176614e465400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000950524f544f475241560000000000000000000000000000000000000000000000 --compiler-version v0.8.12+commit.f00d7308 <CONTRACT_ADDRESS_FROM_PREVIOUS_STEP> src/ProtoGravaNFT.sol:ProtoGravaNFT <YOUR_OPTIMISTIC_ETHERSCAN_API_KEY>
+```
+
+### Verify Check
+
+```
+ETHERSCAN_API_KEY=<YOUR_OPTIMISTIC_ETHERSCAN_API_KEY> forge verify-check <GUID_FROM_PREVIOUS_STEP> --chain-id 10
 ```
