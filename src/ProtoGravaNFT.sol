@@ -34,14 +34,29 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
     /// @param name that was used
     event Mint(address indexed to, string hash, string name);
 
+    /// @notice Emitted after Merkle root is changed
+    /// @param newMerkleRoot for validating claims
+    event MerkleRootChanged(bytes32 newMerkleRoot);
+
+    /// @notice Emitted after description is changed
+    /// @param newDescription for all tokens
+    event DescriptionChanged(string newDescription);
+
+    /// @notice Emitted after default format is changed
+    /// @param newDefaultFormat for all tokens
+    event DefaultFormatChanged(string newDefaultFormat);
+
     /// ============ Errors ============
 
     /// @notice Thrown if a non-existent token is queried
     error DoesNotExist();
+
     /// @notice Thrown if unauthorized user tries to burn token
     error NotAuthorized();
+
     /// @notice Thrown if total supply is exceeded
     error NoTokensLeft();
+
     /// @notice Thrown if address/hash are not part of Merkle tree
     error NotInMerkle();
 
@@ -156,6 +171,8 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
     function ownerSetDefaultFormat(string calldata _defaultFormat) public {
         if (msg.sender != _owner) revert NotOwner();
         defaultFormat = _defaultFormat;
+
+        emit DefaultFormatChanged(defaultFormat);
     }
 
     /// @notice Update default Gravatar image format for future tokens
@@ -163,6 +180,8 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
     function ownerSetDescription(string calldata _description) public {
         if (msg.sender != _owner) revert NotOwner();
         description = _description;
+
+        emit DescriptionChanged(description);
     }
 
     /// @notice Set a new Merkle root
@@ -170,6 +189,8 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
     function ownerSetMerkleRoot(bytes32 _merkleRoot) public {
         if (msg.sender != _owner) revert NotOwner();
         merkleRoot = _merkleRoot;
+
+        emit MerkleRootChanged(merkleRoot);
     }
 
     /// @notice Get the description

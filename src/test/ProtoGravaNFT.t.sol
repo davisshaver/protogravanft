@@ -54,8 +54,11 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
     }
 
     /// @notice Default description should be updatable
+    event DescriptionChanged(string newDescription);
     function testDescriptionSetAndGet() public {
         string memory newDescription = "New description";
+        hevm.expectEmit(true, true, true, true);
+        emit DescriptionChanged(newDescription);
         protogravanft.ownerSetDescription(newDescription);
         require(
             keccak256(abi.encodePacked(protogravanft.getDescription())) ==
@@ -75,8 +78,11 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
     }
 
     /// @notice Default image format should be updatable
+    event DefaultFormatChanged(string newDefaultFormat);
     function testDefaultFormatSetAndGet() public {
         string memory newDefaultFormat = "retro";
+        hevm.expectEmit(true, true, true, true);
+        emit DefaultFormatChanged(newDefaultFormat);
         protogravanft.ownerSetDefaultFormat(newDefaultFormat);
         require(
             keccak256(
