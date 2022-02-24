@@ -118,7 +118,7 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
                                     name,
                                     '", "description": "',
                                     description,
-                                    '", "image": "//secure.gravatar.com/avatar/',
+                                    '", "image": "https://secure.gravatar.com/avatar/',
                                     gravatarHash,
                                     "?s=2048&d=",
                                     defaultFormat,
