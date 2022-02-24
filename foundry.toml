@@ -1,3 +1,7 @@
 [default]
 verbosity = 3
+ffi = false
+fuzz_runs = 256
+optimizer = true
+optimizer_runs = 1000000
 solc_version = "0.8.12"
