@@ -13,3 +13,6 @@
 [submodule "lib/forge-std"]
 	path = lib/forge-std
 	url = https://github.com/brockelmore/forge-std
+[submodule "lib/solsha1"]
+	path = lib/solsha1
+	url = https://github.com/ensdomains/solsha1
