@@ -13,6 +13,3 @@
 [submodule "lib/forge-std"]
 	path = lib/forge-std
 	url = https://github.com/brockelmore/forge-std
-[submodule "lib/reverse-records"]
-	path = lib/reverse-records
-	url = https://github.com/ensdomains/reverse-records
