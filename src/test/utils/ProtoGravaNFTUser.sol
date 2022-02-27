@@ -42,8 +42,19 @@ contract ProtoGravaNFTUser {
     function mint(
         string calldata name,
         string calldata gravatarHash,
-        bytes32[] calldata proof
+        bytes32[] calldata proof,
+        uint256 transferLimit
     ) public {
-        return protogravanft.mint(name, gravatarHash, proof);
+        return protogravanft.mint(name, gravatarHash, proof, transferLimit);
+    }
+
+    /// @notice Transfer a token
+    /// @param to address receiving transfer
+    /// @param id of token being transferred
+    function transferFrom(
+        address to,
+        uint256 id
+    ) public {
+        return protogravanft.transferFrom(getAddress(), to, id);
     }
 }

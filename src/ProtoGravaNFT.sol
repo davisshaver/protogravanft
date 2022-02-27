@@ -60,6 +60,9 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
     /// @notice Thrown if address/hash are not part of Merkle tree
     error NotInMerkle();
 
+    /// @notice Thrown if transfer limit reached & prevents transfer
+    error TransferLimitReached();
+
     /// ============ Mutable Storage ============
 
     /// @notice Mapping of ids to hashes
@@ -68,8 +71,11 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
     /// @notice Mapping of ids to names
     mapping(uint256 => string) private gravIDsToNames;
 
-    /// @notice Mapping of addresses to hashes
-    mapping(address => string) private gravOwnersToHashes;
+    /// @notice Mapping of ids to number of transfers
+    mapping (uint256 => uint256) private gravIDsToTransfers;
+
+    /// @notice Mapping of ids to transfer limits
+    mapping (uint256 => uint256) private gravIDsToTransferLimits;
 
     /// @notice Merkle root
     bytes32 public merkleRoot;
@@ -144,7 +150,8 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
     function mint(
         string calldata name,
         string calldata gravatarHash,
-        bytes32[] calldata proof
+        bytes32[] calldata proof,
+        uint256 transferLimit
     ) external {
         if (totalSupply + 1 >= TOTAL_SUPPLY) revert NoTokensLeft();
 
@@ -155,10 +162,25 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
         uint256 newItemId = totalSupply++;
         gravIDsToHashes[newItemId] = gravatarHash;
         gravIDsToNames[newItemId] = name;
+        gravIDsToTransferLimits[newItemId] = transferLimit;
 
         _mint(msg.sender, newItemId);
 
         emit Mint(msg.sender, gravatarHash, name);
+    }
+
+    /// @notice Transfer a token
+    /// @param from address making transfer
+    /// @param to address receiving transfer
+    /// @param id of token being transferred
+    function transferFrom(
+        address from,
+        address to,
+        uint256 id
+    ) public override {
+        if (gravIDsToTransfers[id] + 1 > gravIDsToTransferLimits[id]) revert TransferLimitReached();
+        super.transferFrom(from, to, id);
+        gravIDsToTransfers[id] = gravIDsToTransfers[id] + 1;
     }
 
     /// @notice Gets URI for a specific token
