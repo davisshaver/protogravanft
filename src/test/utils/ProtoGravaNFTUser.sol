@@ -51,10 +51,7 @@ contract ProtoGravaNFTUser {
     /// @notice Transfer a token
     /// @param to address receiving transfer
     /// @param id of token being transferred
-    function transferFrom(
-        address to,
-        uint256 id
-    ) public {
+    function transferFrom(address to, uint256 id) public {
         return protogravanft.transferFrom(getAddress(), to, id);
     }
 }

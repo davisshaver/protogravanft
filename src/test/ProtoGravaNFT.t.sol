@@ -190,7 +190,6 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         charlie.transferFrom(aliceAddress, 0);
     }
 
-
     /// @notice Ensure token ID increments correctly
     function testAliceCharlieMint() public {
         alice.mint(

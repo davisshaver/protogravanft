@@ -72,10 +72,10 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
     mapping(uint256 => string) private gravIDsToNames;
 
     /// @notice Mapping of ids to number of transfers
-    mapping (uint256 => uint256) private gravIDsToTransfers;
+    mapping(uint256 => uint256) private gravIDsToTransfers;
 
     /// @notice Mapping of ids to transfer limits
-    mapping (uint256 => uint256) private gravIDsToTransferLimits;
+    mapping(uint256 => uint256) private gravIDsToTransferLimits;
 
     /// @notice Merkle root
     bytes32 public merkleRoot;
@@ -128,8 +128,7 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
                                     gravatarHash,
                                     "?s=2048&d=",
                                     defaultFormat,
-                                    '", "properties": {}, ',
-                                    '"background_color": "4678eb", ',
+                                    '", "background_color": "4678eb", ',
                                     '"external_url": "https://www.gravatar.com/',
                                     gravatarHash,
                                     "}"
@@ -178,7 +177,8 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
         address to,
         uint256 id
     ) public override {
-        if (gravIDsToTransfers[id] + 1 > gravIDsToTransferLimits[id]) revert TransferLimitReached();
+        if (gravIDsToTransfers[id] + 1 > gravIDsToTransferLimits[id])
+            revert TransferLimitReached();
         super.transferFrom(from, to, id);
         gravIDsToTransfers[id] = gravIDsToTransfers[id] + 1;
     }
