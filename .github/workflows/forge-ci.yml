@@ -34,4 +34,4 @@ jobs:
         run: yarn lint:check
 
       - name: Run tests
-        run: forge test
+        run: yarn test
