@@ -184,6 +184,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
         if (msg.sender != ownerOf[id]) revert NotAllowedToBurn();
         delete gravIDsToHashes[id];
         delete gravIDsToNames[id];
+        delete gravIDsToTransfers[id];
         delete gravIDsToTransferLimits[id];
         _burn(id);
     }
