@@ -297,12 +297,13 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
 
     /// @notice Ensure that total supply max cannot be exceeded
     function testMintWithMaxSupply() public {
+        // @TODO Add some documentation here, magical storage slot number.
         hevm.store(
             address(protogravanft),
-            bytes32(uint256(7)),
-            bytes32(protogravanft.TOTAL_SUPPLY())
+            bytes32(uint256(9)),
+            bytes32(protogravanft.MAX_TOTAL_SUPPLY())
         );
-        assertEq(protogravanft.TOTAL_SUPPLY(), type(uint256).max - 1);
+        assertEq(protogravanft.MAX_TOTAL_SUPPLY(), type(uint256).max - 1);
         hevm.expectRevert(abi.encodeWithSignature("NoTokensLeft()"));
         alice.mint(
             "Alice's Gravatar NFT",

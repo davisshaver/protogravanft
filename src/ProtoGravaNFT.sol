@@ -9,6 +9,7 @@ import "solmate/tokens/ERC721.sol";
 
 /// ============ Internal Imports ============
 
+import "./LilENS.sol";
 import "./LilOwnable.sol";
 
 /// ============ Defaults ============
@@ -22,9 +23,37 @@ library Defaults {
 /// @title ProtoGravaNFT
 /// @notice Gravatar-powered ERC721 claimable by members of a Merkle tree
 /// @author Davis Shaver <davisshaver@gmail.com>
-contract ProtoGravaNFT is ERC721, LilOwnable {
-    uint256 public constant TOTAL_SUPPLY = type(uint256).max - 1;
+contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
+    /// ============ Immutable Storage ============
+
+    /// @notice Max total supply of token
+    uint256 public constant MAX_TOTAL_SUPPLY = type(uint256).max - 1;
+
+    /// ============ Mutable Storage ============
+
+    /// @notice Current total supply of token
     uint256 public totalSupply;
+
+    /// @notice Mapping of ids to hashes
+    mapping(uint256 => string) private gravIDsToHashes;
+
+    /// @notice Mapping of ids to names
+    mapping(uint256 => string) private gravIDsToNames;
+
+    /// @notice Mapping of ids to number of transfers
+    mapping(uint256 => uint256) private gravIDsToTransfers;
+
+    /// @notice Mapping of ids to transfer limits
+    mapping(uint256 => uint256) private gravIDsToTransferLimits;
+
+    /// @notice Merkle root
+    bytes32 public merkleRoot;
+
+    /// @notice Default fallback image
+    string public defaultFormat;
+
+    /// @notice Description
+    string public description;
 
     /// ============ Events ============
 
@@ -62,29 +91,6 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
 
     /// @notice Thrown if transfer limit reached & prevents transfer
     error TransferLimitReached();
-
-    /// ============ Mutable Storage ============
-
-    /// @notice Mapping of ids to hashes
-    mapping(uint256 => string) private gravIDsToHashes;
-
-    /// @notice Mapping of ids to names
-    mapping(uint256 => string) private gravIDsToNames;
-
-    /// @notice Mapping of ids to number of transfers
-    mapping(uint256 => uint256) private gravIDsToTransfers;
-
-    /// @notice Mapping of ids to transfer limits
-    mapping(uint256 => uint256) private gravIDsToTransferLimits;
-
-    /// @notice Merkle root
-    bytes32 public merkleRoot;
-
-    /// @notice Default fallback image
-    string public defaultFormat;
-
-    /// @notice Description
-    string public description;
 
     /// ============ Constructor ============
 
@@ -152,7 +158,7 @@ contract ProtoGravaNFT is ERC721, LilOwnable {
         bytes32[] calldata proof,
         uint256 transferLimit
     ) external {
-        if (totalSupply + 1 >= TOTAL_SUPPLY) revert NoTokensLeft();
+        if (totalSupply + 1 >= MAX_TOTAL_SUPPLY) revert NoTokensLeft();
 
         bytes32 leaf = keccak256(abi.encodePacked(gravatarHash, msg.sender));
         bool isValidLeaf = MerkleProof.verify(proof, merkleRoot, leaf);
