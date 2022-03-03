@@ -13,6 +13,3 @@
 [submodule "lib/forge-std"]
 	path = lib/forge-std
 	url = https://github.com/brockelmore/forge-std
-[submodule "lib/ens-contracts"]
-	path = lib/ens-contracts
-	url = https://github.com/ensdomains/ens-contracts
