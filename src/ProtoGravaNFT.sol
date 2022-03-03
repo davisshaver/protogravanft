@@ -86,6 +86,9 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     /// @notice Thrown if total supply is exceeded
     error NoTokensLeft();
 
+    /// @notice Thrown if burn attempted on token not owned by address
+    error NotAllowedToBurn();
+
     /// @notice Thrown if address/hash are not part of Merkle tree
     error NotInMerkle();
 
@@ -152,6 +155,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     /// @param name of token being minted
     /// @param gravatarHash of token being minted
     /// @param proof of Gravatar hash ownership
+    /// @param transferLimit of token
     function mint(
         string calldata name,
         string calldata gravatarHash,
@@ -172,6 +176,16 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
         _mint(msg.sender, newItemId);
 
         emit Mint(msg.sender, gravatarHash, name);
+    }
+
+    /// @notice Burn a token
+    /// @param id of token being burned
+    function burn(uint256 id) external {
+        if (msg.sender != ownerOf[id]) revert NotAllowedToBurn();
+        delete gravIDsToHashes[id];
+        delete gravIDsToNames[id];
+        delete gravIDsToTransferLimits[id];
+        _burn(id);
     }
 
     /// @notice Transfer a token

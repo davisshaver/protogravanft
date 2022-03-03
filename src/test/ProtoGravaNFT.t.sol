@@ -190,6 +190,30 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         charlie.transferFrom(aliceAddress, 0);
     }
 
+    /// @notice Allow Alice to mint a token for approved hash and then burn it
+    function testAliceMintAndBurn() public {
+        // Collect Alice balance of tokens before mint
+        uint256 alicePreBalance = alice.tokenBalance();
+        // Mint approved token
+        alice.mint(
+            "Alice's Gravatar NFT",
+            approvedGravatarHashAlice,
+            correctProofAlice,
+            1
+        );
+        // Collect Alice balance of tokens after mint
+        uint256 alicePostBalance = alice.tokenBalance();
+        assertEq(alicePreBalance, 0);
+        assertEq(alicePostBalance, 1);
+        assertEq(protogravanft.totalSupply(), 1);
+        assertEq(protogravanft.ownerOf(0), alice.getAddress());
+        hevm.expectRevert(abi.encodeWithSignature("NotAllowedToBurn()"));
+        charlie.burn(0);
+        alice.burn(0);
+        assertEq(protogravanft.ownerOf(0), address(0));
+        assertEq(alice.tokenBalance(), 0);
+    }
+
     /// @notice Ensure token ID increments correctly
     function testAliceCharlieMint() public {
         alice.mint(

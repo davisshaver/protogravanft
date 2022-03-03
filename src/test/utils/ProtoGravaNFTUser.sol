@@ -54,4 +54,10 @@ contract ProtoGravaNFTUser {
     function transferFrom(address to, uint256 id) public {
         return protogravanft.transferFrom(getAddress(), to, id);
     }
+
+    /// @notice Burn a token
+    /// @param id of token being burned
+    function burn(uint256 id) public {
+        return protogravanft.burn(id);
+    }
 }
