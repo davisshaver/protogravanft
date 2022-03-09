@@ -3,7 +3,7 @@ pragma solidity ^0.8.12;
 
 /// @title Strings
 /// @notice Adapted from https://github.com/ensdomains/reverse-records/blob/master/contracts/Namehash.sol
-library Strings {
+library NamehashStrings {
     struct Slice {
         uint256 _len;
         uint256 _ptr;
@@ -135,16 +135,16 @@ library Strings {
 /// @title Namehash
 /// @notice Adapted from https://github.com/ensdomains/reverse-records/blob/master/contracts/Namehash.sol
 library Namehash {
-    using Strings for *;
+    using NamehashStrings for *;
 
     /// @notice Get namehash for name
     /// @param name Name to check
     /// @return hash Generated namehash
     function namehash(string memory name) internal pure returns (bytes32 hash) {
         hash = bytes32(0);
-        Strings.Slice memory nameslice = name.toSlice();
-        Strings.Slice memory delim = ".".toSlice();
-        Strings.Slice memory token;
+        NamehashStrings.Slice memory nameslice = name.toSlice();
+        NamehashStrings.Slice memory delim = ".".toSlice();
+        NamehashStrings.Slice memory token;
         for (
             nameslice.rsplit(delim, token);
             !token.empty();

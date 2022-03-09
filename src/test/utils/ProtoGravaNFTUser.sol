@@ -36,16 +36,14 @@ contract ProtoGravaNFTUser {
     /// ============ Inherited functionality ============
 
     /// @notice Mint a token
-    /// @param name of token being minted
     /// @param gravatarHash of token being minted
     /// @param proof of Gravatar hash ownership
     function mint(
-        string calldata name,
         string calldata gravatarHash,
         bytes32[] calldata proof,
         uint256 transferLimit
     ) public {
-        return protogravanft.mint(name, gravatarHash, proof, transferLimit);
+        return protogravanft.mint(gravatarHash, proof, transferLimit);
     }
 
     /// @notice Transfer a token

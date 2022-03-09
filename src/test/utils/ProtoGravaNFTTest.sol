@@ -35,13 +35,8 @@ abstract contract ProtoGravaNFTTest is DSTest {
     }
 
     /// @notice Generates a Gravatar image URI
-    /// @param gravatarHash for this specific token URI
-    /// @param name for this specific token URI
-    function formatTokenURI(string memory gravatarHash, string memory name)
-        public
-        view
-        returns (string memory)
-    {
-        return protogravanft.formatTokenURI(gravatarHash, name);
+    /// @param id for this specific token URI
+    function formatTokenURI(uint256 id) public view returns (string memory) {
+        return protogravanft.formatTokenURI(id);
     }
 }

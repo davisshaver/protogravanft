@@ -43,7 +43,7 @@ abstract contract LilENS {
     /// @param ensName ENS name to lookup
     /// @param key Text record key to lookup
     /// @return Text record if set
-    function ensToText(string memory ensName, string calldata key)
+    function ensToText(string memory ensName, string memory key)
         public
         view
         returns (string memory)
@@ -56,7 +56,7 @@ abstract contract LilENS {
     /// @param node Namehash for lookup
     /// @param key Text record key to lookup
     /// @return Text record if set
-    function text(bytes32 node, string calldata key)
+    function text(bytes32 node, string memory key)
         public
         view
         returns (string memory)
@@ -103,7 +103,7 @@ abstract contract Resolver {
     /// @param node Namehash for lookup
     /// @param key Text record key to lookup
     /// @return Text record if set
-    function text(bytes32 node, string calldata key)
+    function text(bytes32 node, string memory key)
         public
         view
         virtual

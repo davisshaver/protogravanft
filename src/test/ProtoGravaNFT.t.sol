@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.12;
 
+import "@openzeppelin/contracts/utils/Strings.sol";
+import "base64-sol/base64.sol";
 import "ds-test/test.sol";
 import "forge-std/Vm.sol";
 import "./utils/ProtoGravaNFTTest.sol";
@@ -132,12 +134,7 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         // Collect Alice balance of tokens before mint
         uint256 alicePreBalance = alice.tokenBalance();
         // Mint approved token
-        alice.mint(
-            "Alice's Gravatar NFT",
-            approvedGravatarHashAlice,
-            correctProofAlice,
-            0
-        );
+        alice.mint(approvedGravatarHashAlice, correctProofAlice, 0);
         // Collect Alice balance of tokens after mint
         uint256 alicePostBalance = alice.tokenBalance();
         assertEq(alicePreBalance, 0);
@@ -151,12 +148,7 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         // Collect Alice balance of tokens before mint
         uint256 alicePreBalance = alice.tokenBalance();
         // Mint approved token
-        alice.mint(
-            "Alice's Gravatar NFT",
-            approvedGravatarHashAlice,
-            correctProofAlice,
-            0
-        );
+        alice.mint(approvedGravatarHashAlice, correctProofAlice, 0);
         // Collect Alice balance of tokens after mint
         uint256 alicePostBalance = alice.tokenBalance();
         assertEq(alicePreBalance, 0);
@@ -172,12 +164,7 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         // Collect Alice balance of tokens before mint
         uint256 alicePreBalance = alice.tokenBalance();
         // Mint approved token
-        alice.mint(
-            "Alice's Gravatar NFT",
-            approvedGravatarHashAlice,
-            correctProofAlice,
-            1
-        );
+        alice.mint(approvedGravatarHashAlice, correctProofAlice, 1);
         // Collect Alice balance of tokens after mint
         uint256 alicePostBalance = alice.tokenBalance();
         assertEq(alicePreBalance, 0);
@@ -195,12 +182,7 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         // Collect Alice balance of tokens before mint
         uint256 alicePreBalance = alice.tokenBalance();
         // Mint approved token
-        alice.mint(
-            "Alice's Gravatar NFT",
-            approvedGravatarHashAlice,
-            correctProofAlice,
-            1
-        );
+        alice.mint(approvedGravatarHashAlice, correctProofAlice, 1);
         // Collect Alice balance of tokens after mint
         uint256 alicePostBalance = alice.tokenBalance();
         assertEq(alicePreBalance, 0);
@@ -216,18 +198,8 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
 
     /// @notice Ensure token ID increments correctly
     function testAliceCharlieMint() public {
-        alice.mint(
-            "Alice's Gravatar NFT",
-            approvedGravatarHashAlice,
-            correctProofAlice,
-            0
-        );
-        charlie.mint(
-            "Charlie's Gravatar NFT",
-            approvedGravatarHashCharlie,
-            correctProofCharlie,
-            0
-        );
+        alice.mint(approvedGravatarHashAlice, correctProofAlice, 0);
+        charlie.mint(approvedGravatarHashCharlie, correctProofCharlie, 0);
         assertEq(protogravanft.ownerOf(0), alice.getAddress());
         assertEq(protogravanft.ownerOf(1), charlie.getAddress());
     }
@@ -235,81 +207,36 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
     /// @notice Do not allow Alice to mint a token for unapproved hash
     function testAliceMintUnapproved() public {
         hevm.expectRevert(abi.encodeWithSignature("NotInMerkle()"));
-        alice.mint(
-            "Alice's Second Gravatar NFT",
-            unApprovedGravatarHashBob,
-            correctProofAlice,
-            0
-        );
+        alice.mint(unApprovedGravatarHashBob, correctProofAlice, 0);
     }
 
     /// @notice Do not allow Alice to mint a token with wrong proof
     function testAliceMintWrongProof() public {
         hevm.expectRevert(abi.encodeWithSignature("NotInMerkle()"));
-        alice.mint(
-            "Alice's Second Gravatar NFT",
-            approvedGravatarHashAlice,
-            incorrectProofBob,
-            0
-        );
+        alice.mint(approvedGravatarHashAlice, incorrectProofBob, 0);
     }
 
     /// @notice Do not allow Bob to mint any token
     function testBobMintUnapproved() public {
         hevm.expectRevert(abi.encodeWithSignature("NotInMerkle()"));
-        bob.mint(
-            "Bob's Gravatar NFT",
-            approvedGravatarHashAlice,
-            correctProofAlice,
-            0
-        );
+        bob.mint(approvedGravatarHashAlice, correctProofAlice, 0);
         hevm.expectRevert(abi.encodeWithSignature("NotInMerkle()"));
-        bob.mint(
-            "Bob's Gravatar NFT",
-            unApprovedGravatarHashBob,
-            correctProofAlice,
-            0
-        );
+        bob.mint(unApprovedGravatarHashBob, correctProofAlice, 0);
         hevm.expectRevert(abi.encodeWithSignature("NotInMerkle()"));
-        bob.mint(
-            "Bob's Gravatar NFT",
-            approvedGravatarHashAlice,
-            incorrectProofBob,
-            0
-        );
+        bob.mint(approvedGravatarHashAlice, incorrectProofBob, 0);
         hevm.expectRevert(abi.encodeWithSignature("NotInMerkle()"));
-        bob.mint(
-            "Bob's Gravatar NFT",
-            unApprovedGravatarHashBob,
-            incorrectProofBob,
-            0
-        );
+        bob.mint(unApprovedGravatarHashBob, incorrectProofBob, 0);
     }
 
     /// @notice Check whether minted token has right token URI
     function testAliceMintTokenURI() public {
-        string memory aliceTokenName = "Alice's Gravatar NFT";
-        alice.mint(
-            aliceTokenName,
-            approvedGravatarHashAlice,
-            correctProofAlice,
-            0
-        );
-        assertEq(
-            protogravanft.tokenURI(0),
-            formatTokenURI(approvedGravatarHashAlice, aliceTokenName)
-        );
+        alice.mint(approvedGravatarHashAlice, correctProofAlice, 0);
+        assertEq(protogravanft.tokenURI(0), formatTokenURI(0));
     }
 
     /// @notice Ensure that token URI is updated after description change
     function testFailAliceMintTokenURIUpdatedDescriptionFormat() public {
-        string memory aliceTokenName = "Alice's Gravatar NFT";
-        alice.mint(
-            aliceTokenName,
-            approvedGravatarHashAlice,
-            correctProofAlice,
-            0
-        );
+        alice.mint(approvedGravatarHashAlice, correctProofAlice, 0);
         string memory aliceTokenURIPre = protogravanft.tokenURI(0);
         string memory newDefaultFormat = "retro";
         protogravanft.ownerSetDefaultFormat(newDefaultFormat);
@@ -317,6 +244,31 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         protogravanft.ownerSetDescription(newDescription);
         string memory aliceTokenURIPost = protogravanft.tokenURI(0);
         assertEq(aliceTokenURIPre, aliceTokenURIPost);
+    }
+
+    /// @notice Check for expected ENS attributes after transfer
+    function testAliceMintTransferENSAttributes() public {
+        alice.mint(approvedGravatarHashAlice, correctProofAlice, 1);
+        (
+            string memory aliceTokenNamePre,
+            bool aliceTokenHasEnsPre
+        ) = protogravanft.getTokenName(0);
+        string memory aliceAddressString = Strings.toHexString(
+            uint256(uint160(alice.getAddress())),
+            20
+        );
+        assertEq(aliceTokenNamePre, aliceAddressString);
+        assertTrue(!aliceTokenHasEnsPre);
+        alice.transferFrom(
+            address(0xaf045Cb0dBC1225948482e4692Ec9dC7Bb3cD48b),
+            0
+        );
+        (
+            string memory aliceTokenNamePost,
+            bool aliceTokenHasEnsPost
+        ) = protogravanft.getTokenName(0);
+        assertTrue(aliceTokenHasEnsPost);
+        assertEq(aliceTokenNamePost, "davisshaver.eth");
     }
 
     /// @notice Ensure that total supply max cannot be exceeded
@@ -329,11 +281,6 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         );
         assertEq(protogravanft.MAX_TOTAL_SUPPLY(), type(uint256).max - 1);
         hevm.expectRevert(abi.encodeWithSignature("NoTokensLeft()"));
-        alice.mint(
-            "Alice's Gravatar NFT",
-            approvedGravatarHashAlice,
-            correctProofAlice,
-            0
-        );
+        alice.mint(approvedGravatarHashAlice, correctProofAlice, 0);
     }
 }

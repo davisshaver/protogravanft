@@ -4,6 +4,7 @@ pragma solidity ^0.8.12;
 /// ============ External Imports ============
 
 import "base64-sol/base64.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "solmate/tokens/ERC721.sol";
 
@@ -37,9 +38,6 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     /// @notice Mapping of ids to hashes
     mapping(uint256 => string) private gravIDsToHashes;
 
-    /// @notice Mapping of ids to names
-    mapping(uint256 => string) private gravIDsToNames;
-
     /// @notice Mapping of ids to number of transfers
     mapping(uint256 => uint256) private gravIDsToTransfers;
 
@@ -60,8 +58,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     /// @notice Emitted after a successful mint
     /// @param to which address
     /// @param hash that was claimed
-    /// @param name that was used
-    event Mint(address indexed to, string hash, string name);
+    event Mint(address indexed to, string hash);
 
     /// @notice Emitted after Merkle root is changed
     /// @param newMerkleRoot for validating claims
@@ -111,53 +108,170 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
         merkleRoot = _merkleRoot;
     }
 
-    /* solhint-disable quotes */
-    /// @notice Generates a Gravatar image URI for token
-    /// @param gravatarHash for this specific token
-    /// @param name for this specific token
-    /// @return Token URI
-    function formatTokenURI(string memory gravatarHash, string memory name)
+    /// @notice Get name of a token
+    /// @param id for token being generated
+    /// @return tokenName for ID
+    /// @return hasEnsName for ID
+    function getTokenName(uint256 id)
         public
         view
-        returns (string memory)
+        returns (string memory tokenName, bool hasEnsName)
     {
-        return
-            string(
-                abi.encodePacked(
-                    "data:application/json;base64,",
-                    Base64.encode(
-                        abi.encodePacked(
-                            bytes(
-                                abi.encodePacked(
-                                    '{"name": "',
-                                    name,
-                                    '", "description": "',
-                                    description,
-                                    '", "image": "https://secure.gravatar.com/avatar/',
-                                    gravatarHash,
-                                    "?s=2048&d=",
-                                    defaultFormat,
-                                    '", "background_color": "4678eb", ',
-                                    '"external_url": "https://www.gravatar.com/',
-                                    gravatarHash,
-                                    "}"
-                                )
+        string memory ensName = addrToENS(ownerOf[id])[0];
+        hasEnsName =
+            keccak256(abi.encodePacked(ensName)) !=
+            keccak256(abi.encodePacked(""));
+        tokenName = hasEnsName
+            ? ensName
+            : Strings.toHexString(uint256(uint160(ownerOf[id])), 20);
+        return (tokenName, hasEnsName);
+    }
+
+    /* solhint-disable quotes */
+    /// @notice Get specific attribute for an ENS name
+    /// @param ensName for owner of token being generated
+    /// @param attributeKey for ENS lookup
+    /// @param attributeLabel for token attributes
+    /// @return attribute value for token
+    function getAttribute(
+        string memory ensName,
+        string memory attributeKey,
+        string memory attributeLabel,
+        bool includeTrailingComma
+    ) public view returns (string memory attribute) {
+        string memory attributeValue = ensToText(ensName, attributeKey);
+        string memory maybeTrailingComma = includeTrailingComma ? ", " : "";
+        attribute = string(
+            abi.encodePacked(
+                '{ "trait_type": "',
+                attributeLabel,
+                '", "value": "',
+                attributeValue,
+                '" }',
+                maybeTrailingComma
+            )
+        );
+        return attribute;
+    }
+
+    /* solhint-enable quotes */
+
+    /* solhint-disable quotes */
+    /// @notice Get attributes of a token
+    /// @param ensName for owner of token being generated
+    /// @return tokenAttributes for token
+    function getTokenAttributes(string memory ensName)
+        public
+        view
+        returns (string memory tokenAttributes)
+    {
+        string memory tokenAttributesStart = '"attributes": [';
+        string memory tokenAttributesEnd = "]";
+        string memory locationAttribute = getAttribute(
+            ensName,
+            "location",
+            "Location",
+            true
+        );
+        string memory emailAttribute = getAttribute(
+            ensName,
+            "email",
+            "Email",
+            true
+        );
+        string memory urlAttribute = getAttribute(ensName, "url", "URL", true);
+        string memory githubAttribute = getAttribute(
+            ensName,
+            "com.github",
+            "Github",
+            true
+        );
+        string memory twitterAttribute = getAttribute(
+            ensName,
+            "com.twitter",
+            "Twitter",
+            true
+        );
+        string memory discordAttribute = getAttribute(
+            ensName,
+            "com.discord",
+            "Discord",
+            true
+        );
+        string memory telegramAttribute = getAttribute(
+            ensName,
+            "org.telegram",
+            "Telegram",
+            false
+        );
+        tokenAttributes = string(
+            abi.encodePacked(
+                tokenAttributesStart,
+                locationAttribute,
+                emailAttribute,
+                urlAttribute,
+                twitterAttribute,
+                githubAttribute,
+                discordAttribute,
+                telegramAttribute,
+                tokenAttributesEnd
+            )
+        );
+        return tokenAttributes;
+    }
+
+    /* solhint-enable quotes */
+
+    /* solhint-disable quotes */
+    /// @notice Generates a Gravatar image URI for token
+    /// @param id for this specific token
+    /// @return generatedTokenURI for this specific token
+    function formatTokenURI(uint256 id)
+        public
+        view
+        returns (string memory generatedTokenURI)
+    {
+        (string memory tokenName, bool hasEnsName) = getTokenName(id);
+        string memory tokenAttributes = hasEnsName
+            ? getTokenAttributes(tokenName)
+            : '"attributes": {}';
+        generatedTokenURI = string(
+            abi.encodePacked(
+                "data:application/json;base64,",
+                Base64.encode(
+                    abi.encodePacked(
+                        bytes(
+                            abi.encodePacked(
+                                '{"name": "',
+                                tokenName,
+                                '", "description": "',
+                                description,
+                                '", "image": "https://secure.gravatar.com/avatar/',
+                                gravIDsToHashes[id],
+                                "?s=2048&d=",
+                                defaultFormat,
+                                '", "background_color": "4678eb", ',
+                                '"external_url": "https://www.gravatar.com/',
+                                gravIDsToHashes[id],
+                                '", ',
+                                tokenAttributes,
+                                "}"
                             )
                         )
                     )
                 )
-            );
+            )
+        );
+        return generatedTokenURI;
     }
 
     /* solhint-enable quotes */
 
     /// @notice Mint a token
-    /// @param name of token being minted
     /// @param gravatarHash of token being minted
     /// @param proof of Gravatar hash ownership
     /// @param transferLimit of token
     function mint(
-        string calldata name,
         string calldata gravatarHash,
         bytes32[] calldata proof,
         uint256 transferLimit
@@ -170,12 +284,11 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
 
         uint256 newItemId = totalSupply++;
         gravIDsToHashes[newItemId] = gravatarHash;
-        gravIDsToNames[newItemId] = name;
         gravIDsToTransferLimits[newItemId] = transferLimit;
 
         _mint(msg.sender, newItemId);
 
-        emit Mint(msg.sender, gravatarHash, name);
+        emit Mint(msg.sender, gravatarHash);
     }
 
     /// @notice Burn a token
@@ -183,7 +296,6 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     function burn(uint256 id) external {
         if (msg.sender != ownerOf[id]) revert NotAllowedToBurn();
         delete gravIDsToHashes[id];
-        delete gravIDsToNames[id];
         delete gravIDsToTransfers[id];
         delete gravIDsToTransferLimits[id];
         _burn(id);
@@ -206,11 +318,17 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
 
     /// @notice Gets URI for a specific token
     /// @param id of token being queried
-    /// @return Token URI
-    function tokenURI(uint256 id) public view override returns (string memory) {
+    /// @return formattedTokenURI of token being queried
+    function tokenURI(uint256 id)
+        public
+        view
+        override
+        returns (string memory formattedTokenURI)
+    {
         if (ownerOf[id] == address(0)) revert DoesNotExist();
 
-        return formatTokenURI(gravIDsToHashes[id], gravIDsToNames[id]);
+        formattedTokenURI = formatTokenURI(id);
+        return formattedTokenURI;
     }
 
     /// @notice Update default Gravatar image format for future tokens
@@ -241,30 +359,31 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     }
 
     /// @notice Get the description
-    /// @return Description
+    /// @return description
     function getDescription() public view returns (string memory) {
         return description;
     }
 
     /// @notice Get the default image format
-    /// @return Default image format
+    /// @return defaultFormat Default image format
     function getDefaultImageFormat() public view returns (string memory) {
         return defaultFormat;
     }
 
     /// @notice Declare supported interfaces
     /// @param interfaceId for support check
-    /// @return Boolean for interface support
+    /// @return interfaceSupported
     function supportsInterface(bytes4 interfaceId)
         public
         pure
         override(LilOwnable, ERC721)
-        returns (bool)
+        returns (bool interfaceSupported)
     {
-        return
+        interfaceSupported =
             interfaceId == 0x7f5828d0 || // ERC165 Interface ID for ERC173
             interfaceId == 0x80ac58cd || // ERC165 Interface ID for ERC721
             interfaceId == 0x5b5e139f || // ERC165 Interface ID for ERC165
             interfaceId == 0x01ffc9a7; // ERC165 Interface ID for ERC721Metadata
+        return interfaceSupported;
     }
 }
