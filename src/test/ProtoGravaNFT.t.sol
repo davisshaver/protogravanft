@@ -55,6 +55,36 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         );
     }
 
+    /// @notice Hacky function to test if what is contained in where
+    /// @param what string to look for
+    /// @param where string to check
+    /// @return found or not
+    function contains(string memory what, string memory where)
+        public
+        pure
+        returns (bool found)
+    {
+        bytes memory whatBytes = bytes(what);
+        bytes memory whereBytes = bytes(where);
+        found = false;
+        if (whereBytes.length < whatBytes.length) {
+            return found;
+        }
+        for (uint256 i = 0; i <= whereBytes.length - whatBytes.length; i++) {
+            bool flag = true;
+            for (uint256 j = 0; j < whatBytes.length; j++)
+                if (whereBytes[i + j] != whatBytes[j]) {
+                    flag = false;
+                    break;
+                }
+            if (flag) {
+                found = true;
+                break;
+            }
+        }
+        return found;
+    }
+
     /// @notice Default description should be updatable
     event DescriptionChanged(string newDescription);
 
@@ -267,7 +297,15 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
             string memory aliceTokenNamePost,
             bool aliceTokenHasEnsPost
         ) = protogravanft.getTokenName(0);
+        string memory aliceTokenBase64Post = protogravanft
+            .generateTokenURIBase64(0);
         assertTrue(aliceTokenHasEnsPost);
+        bytes memory aliceTokenURIPostDecoded = Base64.decode(
+            aliceTokenBase64Post
+        );
+        assertTrue(
+            contains("davisshaver.eth", string(aliceTokenURIPostDecoded))
+        );
         assertEq(aliceTokenNamePost, "davisshaver.eth");
     }
 

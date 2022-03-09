@@ -223,6 +223,44 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     /* solhint-enable quotes */
 
     /* solhint-disable quotes */
+    /// @notice Generates base64 payload for token
+    /// @param id for this specific token
+    /// @return generatedTokenURIBase64 for this specific token
+    function generateTokenURIBase64(uint256 id)
+        public
+        view
+        returns (string memory generatedTokenURIBase64)
+    {
+        (string memory tokenName, bool hasEnsName) = getTokenName(id);
+        string memory tokenAttributes = hasEnsName
+            ? getTokenAttributes(tokenName)
+            : '"attributes": []';
+        generatedTokenURIBase64 = Base64.encode(
+            abi.encodePacked(
+                bytes(
+                    abi.encodePacked(
+                        '{"name": "',
+                        tokenName,
+                        '", "description": "',
+                        description,
+                        '", "image": "https://secure.gravatar.com/avatar/',
+                        gravIDsToHashes[id],
+                        "?s=2048&d=",
+                        defaultFormat,
+                        '", "background_color": "4678eb", ',
+                        '"external_url": "https://www.gravatar.com/',
+                        gravIDsToHashes[id],
+                        '", ',
+                        tokenAttributes,
+                        "}"
+                    )
+                )
+            )
+        );
+    }
+
+    /* solhint-enable quotes */
+
     /// @notice Generates a Gravatar image URI for token
     /// @param id for this specific token
     /// @return generatedTokenURI for this specific token
@@ -231,41 +269,14 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
         view
         returns (string memory generatedTokenURI)
     {
-        (string memory tokenName, bool hasEnsName) = getTokenName(id);
-        string memory tokenAttributes = hasEnsName
-            ? getTokenAttributes(tokenName)
-            : '"attributes": []';
         generatedTokenURI = string(
             abi.encodePacked(
                 "data:application/json;base64,",
-                Base64.encode(
-                    abi.encodePacked(
-                        bytes(
-                            abi.encodePacked(
-                                '{"name": "',
-                                tokenName,
-                                '", "description": "',
-                                description,
-                                '", "image": "https://secure.gravatar.com/avatar/',
-                                gravIDsToHashes[id],
-                                "?s=2048&d=",
-                                defaultFormat,
-                                '", "background_color": "4678eb", ',
-                                '"external_url": "https://www.gravatar.com/',
-                                gravIDsToHashes[id],
-                                '", ',
-                                tokenAttributes,
-                                "}"
-                            )
-                        )
-                    )
-                )
+                generateTokenURIBase64(id)
             )
         );
         return generatedTokenURI;
     }
-
-    /* solhint-enable quotes */
 
     /// @notice Mint a token
     /// @param gravatarHash of token being minted
