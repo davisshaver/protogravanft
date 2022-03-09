@@ -234,7 +234,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
         (string memory tokenName, bool hasEnsName) = getTokenName(id);
         string memory tokenAttributes = hasEnsName
             ? getTokenAttributes(tokenName)
-            : '"attributes": {}';
+            : '"attributes": []';
         generatedTokenURI = string(
             abi.encodePacked(
                 "data:application/json;base64,",
