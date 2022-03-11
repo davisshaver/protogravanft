@@ -3,13 +3,13 @@ pragma solidity ^0.8.12;
 
 /// ============ External Imports ============
 
-import "base64-sol/base64.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "solmate/tokens/ERC721.sol";
 
 /// ============ Internal Imports ============
 
+import "./LilBase64.sol";
 import "./LilENS.sol";
 import "./LilOwnable.sol";
 
@@ -253,7 +253,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
         string memory tokenAttributes = hasEnsName
             ? getTokenAttributes(tokenName)
             : '"attributes": []';
-        generatedTokenURIBase64 = Base64.encode(
+        generatedTokenURIBase64 = LilBase64.encode(
             abi.encodePacked(
                 bytes(
                     abi.encodePacked(
