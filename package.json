@@ -12,17 +12,18 @@
     "*.sol"
   ],
   "devDependencies": {
+    "husky": "^7.0.0",
     "prettier": "^2.5.1",
     "prettier-plugin-solidity": "^1.0.0-beta.19",
     "solhint": "^3.3.7",
-    "solhint-plugin-prettier": "^0.0.5",
-    "husky": "^7.0.0"
+    "solhint-plugin-prettier": "^0.0.5"
   },
   "scripts": {
     "allowlist:test": "node scripts/generate-merkle-tree.js",
     "allowlist": "node scripts/generate-merkle-tree.js prod",
     "build:with-ir": "forge build --extra-output ir",
     "build": "forge build",
+    "chain": "npx hardhat node",
     "generate-ir": "cat ./out/ProtoGravaNFT.sol/ProtoGravaNFT.json | jq -r .ir | perl -pe 's/\\n/\n/g' > ./out/ir.sol",
     "lint:check": "yarn prettier:check && yarn solhint:check",
     "lint": "yarn prettier && yarn solhint",
@@ -31,10 +32,13 @@
     "prettier": "yarn prettier:check --write",
     "solhint:check": "solhint --config ./.solhint.json \"src/**/*.sol\"",
     "solhint": "yarn solhint:check --fix",
-    "test": "forge test --fork-url https://mainnet.infura.io/v3/$INFURA_API_KEY"
+    "test": "forge test --fork-url https://mainnet.infura.io/v3/$INFURA_API_KEY",
+    "test:local": "forge test --fork-url http://127.0.0.1:8545/"
   },
   "dependencies": {
+    "dotenv": "^16.0.0",
     "ethers": "^5.5.2",
+    "hardhat": "^2.9.1",
     "keccak256": "^1.0.6",
     "merkletreejs": "^0.2.27"
   }
