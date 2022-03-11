@@ -370,6 +370,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     }
 
     /// @notice Set a new Merkle root
+    /// @dev This function may be replacable with an implementation of EIP-3668.
     /// @param _merkleRoot for validating claims
     function ownerSetMerkleRoot(bytes32 _merkleRoot) public onlyContractOwner {
         merkleRoot = _merkleRoot;

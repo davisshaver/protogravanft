@@ -21,14 +21,17 @@
   "scripts": {
     "allowlist:test": "node scripts/generate-merkle-tree.js",
     "allowlist": "node scripts/generate-merkle-tree.js prod",
+    "build:with-ir": "forge build --extra-output ir",
+    "build": "forge build",
+    "generate-ir": "cat ./out/ProtoGravaNFT.sol/ProtoGravaNFT.json | jq -r .ir | perl -pe 's/\\n/\n/g' > ./out/ir.sol",
     "lint:check": "yarn prettier:check && yarn solhint:check",
     "lint": "yarn prettier && yarn solhint",
+    "prepare": "husky install",
     "prettier:check": "prettier --check \"src/**/*.sol\"",
     "prettier": "yarn prettier:check --write",
     "solhint:check": "solhint --config ./.solhint.json \"src/**/*.sol\"",
     "solhint": "yarn solhint:check --fix",
-    "test": "forge test --fork-url https://mainnet.infura.io/v3/$INFURA_API_KEY",
-    "prepare": "husky install"
+    "test": "forge test --fork-url https://mainnet.infura.io/v3/$INFURA_API_KEY"
   },
   "dependencies": {
     "ethers": "^5.5.2",
