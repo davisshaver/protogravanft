@@ -72,6 +72,21 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     /// @param newDefaultFormat for all tokens
     event DefaultFormatChanged(string newDefaultFormat);
 
+    /// ============ Modifiers ============
+
+    /// @notice Throws if a non-owner of contract calls function
+    modifier onlyContractOwner() {
+        if (msg.sender != _owner) revert NotOwner();
+        _;
+    }
+
+    /// @notice Throws if called with an id that does not exist
+    /// @param id for token being called
+    modifier tokenExists(uint256 id) {
+        if (ownerOf[id] == address(0)) revert DoesNotExist();
+        _;
+    }
+
     /// ============ Errors ============
 
     /// @notice Thrown if a non-existent token is queried
@@ -115,6 +130,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     function getTokenName(uint256 id)
         public
         view
+        tokenExists(id)
         returns (string memory tokenName, bool hasEnsName)
     {
         string memory ensName = addrToENS(ownerOf[id])[0];
@@ -132,13 +148,14 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     /// @param ensName for owner of token being generated
     /// @param attributeKey for ENS lookup
     /// @param attributeLabel for token attributes
+    /// @param includeTrailingComma after token data
     /// @return attribute value for token
     function getAttribute(
         string memory ensName,
         string memory attributeKey,
         string memory attributeLabel,
         bool includeTrailingComma
-    ) public view returns (string memory attribute) {
+    ) private view returns (string memory attribute) {
         string memory attributeValue = ensToText(ensName, attributeKey);
         string memory maybeTrailingComma = includeTrailingComma ? ", " : "";
         attribute = string(
@@ -161,7 +178,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     /// @param ensName for owner of token being generated
     /// @return tokenAttributes for token
     function getTokenAttributes(string memory ensName)
-        public
+        private
         view
         returns (string memory tokenAttributes)
     {
@@ -229,6 +246,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     function generateTokenURIBase64(uint256 id)
         public
         view
+        tokenExists(id)
         returns (string memory generatedTokenURIBase64)
     {
         (string memory tokenName, bool hasEnsName) = getTokenName(id);
@@ -261,23 +279,6 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
 
     /* solhint-enable quotes */
 
-    /// @notice Generates a Gravatar image URI for token
-    /// @param id for this specific token
-    /// @return generatedTokenURI for this specific token
-    function formatTokenURI(uint256 id)
-        public
-        view
-        returns (string memory generatedTokenURI)
-    {
-        generatedTokenURI = string(
-            abi.encodePacked(
-                "data:application/json;base64,",
-                generateTokenURIBase64(id)
-            )
-        );
-        return generatedTokenURI;
-    }
-
     /// @notice Mint a token
     /// @param gravatarHash of token being minted
     /// @param proof of Gravatar hash ownership
@@ -306,10 +307,10 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     /// @param id of token being burned
     function burn(uint256 id) external {
         if (msg.sender != ownerOf[id]) revert NotAllowedToBurn();
+        _burn(id);
         delete gravIDsToHashes[id];
         delete gravIDsToTransfers[id];
         delete gravIDsToTransferLimits[id];
-        _burn(id);
     }
 
     /// @notice Transfer a token
@@ -334,18 +335,24 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
         public
         view
         override
+        tokenExists(id)
         returns (string memory formattedTokenURI)
     {
-        if (ownerOf[id] == address(0)) revert DoesNotExist();
-
-        formattedTokenURI = formatTokenURI(id);
+        formattedTokenURI = string(
+            abi.encodePacked(
+                "data:application/json;base64,",
+                generateTokenURIBase64(id)
+            )
+        );
         return formattedTokenURI;
     }
 
     /// @notice Update default Gravatar image format for future tokens
     /// @param _defaultFormat for Gravatar image API
-    function ownerSetDefaultFormat(string calldata _defaultFormat) public {
-        if (msg.sender != _owner) revert NotOwner();
+    function ownerSetDefaultFormat(string calldata _defaultFormat)
+        public
+        onlyContractOwner
+    {
         defaultFormat = _defaultFormat;
 
         emit DefaultFormatChanged(defaultFormat);
@@ -353,8 +360,10 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
 
     /// @notice Update default Gravatar image format for future tokens
     /// @param _description for tokens
-    function ownerSetDescription(string calldata _description) public {
-        if (msg.sender != _owner) revert NotOwner();
+    function ownerSetDescription(string calldata _description)
+        public
+        onlyContractOwner
+    {
         description = _description;
 
         emit DescriptionChanged(description);
@@ -362,8 +371,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
 
     /// @notice Set a new Merkle root
     /// @param _merkleRoot for validating claims
-    function ownerSetMerkleRoot(bytes32 _merkleRoot) public {
-        if (msg.sender != _owner) revert NotOwner();
+    function ownerSetMerkleRoot(bytes32 _merkleRoot) public onlyContractOwner {
         merkleRoot = _merkleRoot;
 
         emit MerkleRootChanged(merkleRoot);

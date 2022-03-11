@@ -33,10 +33,4 @@ abstract contract ProtoGravaNFTTest is DSTest {
         bob = new ProtoGravaNFTUser(protogravanft); // 0xefc56627233b02ea95bae7e19f648d7dcd5bb132
         charlie = new ProtoGravaNFTUser(protogravanft); // 0xf5a2fe45f4f1308502b1c136b9ef8af136141382
     }
-
-    /// @notice Generates a Gravatar image URI
-    /// @param id for this specific token URI
-    function formatTokenURI(uint256 id) public view returns (string memory) {
-        return protogravanft.formatTokenURI(id);
-    }
 }

@@ -258,12 +258,6 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         bob.mint(unApprovedGravatarHashBob, incorrectProofBob, 0);
     }
 
-    /// @notice Check whether minted token has right token URI
-    function testAliceMintTokenURI() public {
-        alice.mint(approvedGravatarHashAlice, correctProofAlice, 0);
-        assertEq(protogravanft.tokenURI(0), formatTokenURI(0));
-    }
-
     /// @notice Ensure that token URI is updated after description change
     function testFailAliceMintTokenURIUpdatedDescriptionFormat() public {
         alice.mint(approvedGravatarHashAlice, correctProofAlice, 0);
@@ -276,6 +270,7 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         assertEq(aliceTokenURIPre, aliceTokenURIPost);
     }
 
+    /* solhint-disable quotes */
     /// @notice Check for expected ENS attributes after transfer
     function testAliceMintTransferENSAttributes() public {
         alice.mint(approvedGravatarHashAlice, correctProofAlice, 1);
@@ -304,10 +299,57 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
             aliceTokenBase64Post
         );
         assertTrue(
-            contains("davisshaver.eth", string(aliceTokenURIPostDecoded))
+            contains(
+                '"name": "davisshaver.eth",',
+                string(aliceTokenURIPostDecoded)
+            )
+        );
+        assertTrue(
+            contains(
+                '"trait_type": "Location", "value": "Lebanon Valley"',
+                string(aliceTokenURIPostDecoded)
+            )
+        );
+        assertTrue(
+            contains(
+                '"trait_type": "Email", "value": "davisshaver@gmail.com"',
+                string(aliceTokenURIPostDecoded)
+            )
+        );
+        assertTrue(
+            contains(
+                '"trait_type": "Github", "value": "davisshaver"',
+                string(aliceTokenURIPostDecoded)
+            )
+        );
+        assertTrue(
+            contains(
+                '"trait_type": "URL", "value": "https://davisshaver.com/"',
+                string(aliceTokenURIPostDecoded)
+            )
+        );
+        assertTrue(
+            contains(
+                '"trait_type": "Twitter", "value": "davisshaver"',
+                string(aliceTokenURIPostDecoded)
+            )
+        );
+        assertTrue(
+            contains(
+                '"trait_type": "Discord", "value": "davisshaver#4551"',
+                string(aliceTokenURIPostDecoded)
+            )
+        );
+        assertTrue(
+            contains(
+                '"trait_type": "Telegram", "value": "davisshaver"',
+                string(aliceTokenURIPostDecoded)
+            )
         );
         assertEq(aliceTokenNamePost, "davisshaver.eth");
     }
+
+    /* solhint-enable quotes */
 
     /// @notice Ensure that total supply max cannot be exceeded
     function testMintWithMaxSupply() public {
@@ -320,5 +362,13 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         assertEq(protogravanft.MAX_TOTAL_SUPPLY(), type(uint256).max - 1);
         hevm.expectRevert(abi.encodeWithSignature("NoTokensLeft()"));
         alice.mint(approvedGravatarHashAlice, correctProofAlice, 0);
+    }
+
+    /// @notice Ensure that expected errors are thrown if ID does not exist
+    function testWithFuzzing(uint256 fuzzId) public {
+        hevm.expectRevert(abi.encodeWithSignature("DoesNotExist()"));
+        protogravanft.tokenURI(fuzzId);
+        hevm.expectRevert(abi.encodeWithSignature("DoesNotExist()"));
+        protogravanft.generateTokenURIBase64(fuzzId);
     }
 }

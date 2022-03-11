@@ -13,6 +13,3 @@
 [submodule "lib/forge-std"]
 	path = lib/forge-std
 	url = https://github.com/brockelmore/forge-std
-[submodule "lib/jsmnSol"]
-	path = lib/jsmnSol
-	url = https://github.com/chrisdotn/jsmnSol
