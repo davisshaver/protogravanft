@@ -6,7 +6,7 @@ import "base64-sol/base64.sol";
 import "ds-test/test.sol";
 import "forge-std/Vm.sol";
 import "./utils/ProtoGravaNFTTest.sol";
-import {Defaults, Events} from "../ProtoGravaNFT.sol";
+import {Defaults, ProtoGravaNFT} from "../ProtoGravaNFT.sol";
 
 contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
     Vm internal constant hevm = Vm(HEVM_ADDRESS);
@@ -89,7 +89,7 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
     function testDescriptionSetAndGet() public {
         string memory newDescription = "New description";
         hevm.expectEmit(true, true, true, true);
-        emit Events.DescriptionChanged(newDescription);
+        emit ProtoGravaNFT.DescriptionChanged(newDescription);
         protogravanft.ownerSetDescription(newDescription);
         require(
             keccak256(abi.encodePacked(protogravanft.getDescription())) ==
@@ -112,7 +112,7 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
     function testDefaultFormatSetAndGet() public {
         string memory newDefaultFormat = "retro";
         hevm.expectEmit(true, true, true, true);
-        emit Events.DefaultFormatChanged(newDefaultFormat);
+        emit ProtoGravaNFT.DefaultFormatChanged(newDefaultFormat);
         protogravanft.ownerSetDefaultFormat(newDefaultFormat);
         require(
             keccak256(

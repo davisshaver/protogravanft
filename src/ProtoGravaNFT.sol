@@ -21,25 +21,6 @@ library Defaults {
     string internal constant DefaultForDefaultImage = "robohash";
 }
 
-library Events {
-    /// @notice Emitted after a successful mint
-    /// @param to which address
-    /// @param hash that was claimed
-    event Mint(address indexed to, string hash);
-
-    /// @notice Emitted after Merkle root is changed
-    /// @param newMerkleRoot for validating claims
-    event MerkleRootChanged(bytes32 newMerkleRoot);
-
-    /// @notice Emitted after description is changed
-    /// @param newDescription for all tokens
-    event DescriptionChanged(string newDescription);
-
-    /// @notice Emitted after default format is changed
-    /// @param newDefaultFormat for all tokens
-    event DefaultFormatChanged(string newDefaultFormat);
-}
-
 /// @title ProtoGravaNFT
 /// @notice Gravatar-powered ERC721 claimable by members of a Merkle tree
 /// @author Davis Shaver <davisshaver@gmail.com>
@@ -71,6 +52,25 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
 
     /// @notice Description
     string public description;
+
+    /// ============ Events ============
+
+    /// @notice Emitted after a successful mint
+    /// @param to which address
+    /// @param hash that was claimed
+    event Mint(address indexed to, string hash);
+
+    /// @notice Emitted after Merkle root is changed
+    /// @param newMerkleRoot for validating claims
+    event MerkleRootChanged(bytes32 newMerkleRoot);
+
+    /// @notice Emitted after description is changed
+    /// @param newDescription for all tokens
+    event DescriptionChanged(string newDescription);
+
+    /// @notice Emitted after default format is changed
+    /// @param newDefaultFormat for all tokens
+    event DefaultFormatChanged(string newDefaultFormat);
 
     /// ============ Modifiers ============
 
@@ -300,7 +300,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
 
         _mint(msg.sender, newItemId);
 
-        emit Events.Mint(msg.sender, gravatarHash);
+        emit Mint(msg.sender, gravatarHash);
     }
 
     /// @notice Burn a token
@@ -355,7 +355,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     {
         defaultFormat = _defaultFormat;
 
-        emit Events.DefaultFormatChanged(defaultFormat);
+        emit DefaultFormatChanged(defaultFormat);
     }
 
     /// @notice Update default Gravatar image format for future tokens
@@ -366,7 +366,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     {
         description = _description;
 
-        emit Events.DescriptionChanged(description);
+        emit DescriptionChanged(description);
     }
 
     /// @notice Set a new Merkle root
@@ -375,7 +375,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     function ownerSetMerkleRoot(bytes32 _merkleRoot) public onlyContractOwner {
         merkleRoot = _merkleRoot;
 
-        emit Events.MerkleRootChanged(merkleRoot);
+        emit MerkleRootChanged(merkleRoot);
     }
 
     /// @notice Get the description
