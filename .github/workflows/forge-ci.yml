@@ -38,3 +38,8 @@ jobs:
         run: yarn test
         env:
           INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
+
+      - name: Run Slither (allow failure for now)
+        continue-on-error: true
+        run: yarn slither
+    
