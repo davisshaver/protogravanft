@@ -217,7 +217,9 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         assertEq(protogravanft.ownerOf(0), alice.getAddress());
         hevm.expectRevert(abi.encodeWithSignature("NotAllowedToBurn()"));
         charlie.burn(0);
+        assertEq(protogravanft.ownerOf(0), alice.getAddress());
         alice.burn(0);
+        hevm.expectRevert(bytes("NOT_MINTED"));
         assertEq(protogravanft.ownerOf(0), address(0));
         assertEq(alice.tokenBalance(), 0);
     }

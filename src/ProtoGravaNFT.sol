@@ -83,7 +83,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     /// @notice Throws if called with an id that does not exist
     /// @param id for token being called
     modifier tokenExists(uint256 id) {
-        if (ownerOf[id] == address(0)) revert DoesNotExist();
+        if (_ownerOf[id] == address(0)) revert DoesNotExist();
         _;
     }
 
@@ -133,13 +133,13 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
         tokenExists(id)
         returns (string memory tokenName, bool hasEnsName)
     {
-        string memory ensName = addrToENS(ownerOf[id])[0];
+        string memory ensName = addrToENS(_ownerOf[id])[0];
         hasEnsName =
             keccak256(abi.encodePacked(ensName)) !=
             keccak256(abi.encodePacked(""));
         tokenName = hasEnsName
             ? ensName
-            : Strings.toHexString(uint256(uint160(ownerOf[id])), 20);
+            : Strings.toHexString(uint256(uint160(_ownerOf[id])), 20);
         return (tokenName, hasEnsName);
     }
 
@@ -306,7 +306,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     /// @notice Burn a token
     /// @param id of token being burned
     function burn(uint256 id) external {
-        if (msg.sender != ownerOf[id]) revert NotAllowedToBurn();
+        if (msg.sender != _ownerOf[id]) revert NotAllowedToBurn();
         _burn(id);
         delete gravIDsToHashes[id];
         delete gravIDsToTransfers[id];
