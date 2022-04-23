@@ -157,7 +157,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
         string memory attributeValue = ensToText(ensName, attributeKey);
         string memory maybeTrailingComma = includeTrailingComma ? ", " : "";
         attribute = string(
-            abi.encodePacked(
+            string.concat(
                 '{ "trait_type": "',
                 attributeLabel,
                 '", "value": "',
@@ -220,7 +220,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
             false
         );
         tokenAttributes = string(
-            abi.encodePacked(
+            string.concat(
                 tokenAttributesStart,
                 locationAttribute,
                 emailAttribute,
@@ -252,24 +252,22 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
             ? getTokenAttributes(tokenName)
             : '"attributes": []';
         generatedTokenURIBase64 = LilBase64.encode(
-            abi.encodePacked(
-                bytes(
-                    abi.encodePacked(
-                        '{"name": "',
-                        tokenName,
-                        '", "description": "',
-                        description,
-                        '", "image": "https://secure.gravatar.com/avatar/',
-                        gravIDsToHashes[id],
-                        "?s=2048&d=",
-                        defaultFormat,
-                        '", "background_color": "4678eb", ',
-                        '"external_url": "https://www.gravatar.com/',
-                        gravIDsToHashes[id],
-                        '", ',
-                        tokenAttributes,
-                        "}"
-                    )
+            bytes(
+                string.concat(
+                    '{"name": "',
+                    tokenName,
+                    '", "description": "',
+                    description,
+                    '", "image": "https://secure.gravatar.com/avatar/',
+                    gravIDsToHashes[id],
+                    "?s=2048&d=",
+                    defaultFormat,
+                    '", "background_color": "4678eb", ',
+                    '"external_url": "https://www.gravatar.com/',
+                    gravIDsToHashes[id],
+                    '", ',
+                    tokenAttributes,
+                    "}"
                 )
             )
         );
