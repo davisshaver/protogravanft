@@ -134,9 +134,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
         returns (string memory tokenName, bool hasEnsName)
     {
         string memory ensName = addrToENS(_ownerOf[id])[0];
-        hasEnsName =
-            keccak256(abi.encodePacked(ensName)) !=
-            keccak256(abi.encodePacked(""));
+        hasEnsName = bytes(ensName).length > 0;
         tokenName = hasEnsName
             ? ensName
             : Strings.toHexString(uint256(uint160(_ownerOf[id])), 20);
