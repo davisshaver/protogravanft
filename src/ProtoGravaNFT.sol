@@ -144,6 +144,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     }
 
     /// @notice Get name of a token
+    /// @dev Extra check to ensure ENS forward & reverse resolution match.
     /// @param id for token being generated
     /// @return tokenName for ID
     /// @return hasEnsName for ID
@@ -155,6 +156,12 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     {
         string memory ensName = addrToENS(_ownerOf[id])[0];
         hasEnsName = bytes(ensName).length > 0;
+        if (hasEnsName) {
+            address ensAddress = ensToAddr(ensName);
+            if (ensAddress != _ownerOf[id]) {
+                hasEnsName = false;
+            }
+        }
         tokenName = hasEnsName
             ? ensName
             : Strings.toHexString(uint256(uint160(_ownerOf[id])), 20);
