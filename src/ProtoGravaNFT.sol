@@ -144,7 +144,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     }
 
     /// @notice Get name of a token
-    /// @dev Extra check to ensure ENS forward & reverse resolution match.
+    /// @dev Extra check to ensure ENS forward & reverse resolution match
     /// @param id for token being generated
     /// @return tokenName for ID
     /// @return hasEnsName for ID
@@ -303,6 +303,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     /* solhint-enable quotes */
 
     /// @notice Mint a token
+    /// @dev Note: Transfer limit not part of proof, set by minter
     /// @param gravatarHash of token being minted
     /// @param proof of Gravatar hash ownership
     /// @param transferLimit of token
@@ -393,7 +394,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     }
 
     /// @notice Set a new Merkle root
-    /// @dev This function may be replacable with an implementation of EIP-3668.
+    /// @dev This function may be replacable with an implementation of EIP-3668
     /// @param _merkleRoot for validating claims
     function ownerSetMerkleRoot(bytes32 _merkleRoot) public onlyContractOwner {
         merkleRoot = _merkleRoot;
