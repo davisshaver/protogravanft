@@ -41,7 +41,7 @@ contract ProtoGravaNFTUser {
     function mint(
         string calldata gravatarHash,
         bytes32[] calldata proof,
-        uint256 transferLimit
+        uint128 transferLimit
     ) public {
         return protogravanft.mint(gravatarHash, proof, transferLimit);
     }

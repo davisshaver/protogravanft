@@ -1,25 +1,35 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.12;
 
-/// ============ External Imports ============
+/*//////////////////////////////////////////////////////////////
+                        EXTERNAL IMPORTS
+//////////////////////////////////////////////////////////////*/
 
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "solmate/tokens/ERC721.sol";
 
-/// ============ Internal Imports ============
+/*//////////////////////////////////////////////////////////////
+                        INTERNAL IMPORTS
+//////////////////////////////////////////////////////////////*/
 
 import "./LilBase64.sol";
 import "./LilENS.sol";
 import "./LilOwnable.sol";
 
-/// ============ Defaults ============
+/*//////////////////////////////////////////////////////////////
+                            DEFAULTS
+//////////////////////////////////////////////////////////////*/
 
 library Defaults {
     string internal constant DefaultDescription =
         "Globally Recognized Avatars on the Ethereum Blockchain";
     string internal constant DefaultForDefaultImage = "robohash";
 }
+
+/*//////////////////////////////////////////////////////////////
+                                EVENTS
+//////////////////////////////////////////////////////////////*/
 
 library Events {
     /// @notice Emitted after a successful mint
@@ -44,12 +54,16 @@ library Events {
 /// @notice Gravatar-powered ERC721 claimable by members of a Merkle tree
 /// @author Davis Shaver <davisshaver@gmail.com>
 contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
-    /// ============ Immutable Storage ============
+    /*//////////////////////////////////////////////////////////////
+                            IMMUTABLE STORAGE
+    //////////////////////////////////////////////////////////////*/
 
     /// @notice Max total supply of token
     uint256 public constant MAX_TOTAL_SUPPLY = type(uint256).max - 1;
 
-    /// ============ Mutable Storage ============
+    /*//////////////////////////////////////////////////////////////
+                             MUTABLE STORAGE
+    //////////////////////////////////////////////////////////////*/
 
     /// @notice Current total supply of token
     uint256 public totalSupply;
@@ -72,7 +86,9 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     /// @notice Description
     string public description;
 
-    /// ============ Modifiers ============
+    /*//////////////////////////////////////////////////////////////
+                                MODIFIERS
+    //////////////////////////////////////////////////////////////*/
 
     /// @notice Throws if a non-owner of contract calls function
     modifier onlyContractOwner() {
@@ -87,7 +103,9 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
         _;
     }
 
-    /// ============ Errors ============
+    /*//////////////////////////////////////////////////////////////
+                                 ERRORS
+    //////////////////////////////////////////////////////////////*/
 
     /// @notice Thrown if a non-existent token is queried
     error DoesNotExist();
@@ -107,7 +125,9 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     /// @notice Thrown if transfer limit reached & prevents transfer
     error TransferLimitReached();
 
-    /// ============ Constructor ============
+    /*//////////////////////////////////////////////////////////////
+                               CONSTRUCTOR
+    //////////////////////////////////////////////////////////////*/
 
     /// @notice Creates a new ProtoGravaNFT contract
     /// @param _name of token
@@ -282,7 +302,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     function mint(
         string calldata gravatarHash,
         bytes32[] calldata proof,
-        uint256 transferLimit
+        uint128 transferLimit
     ) external {
         if (totalSupply + 1 >= MAX_TOTAL_SUPPLY) revert NoTokensLeft();
 
