@@ -23,7 +23,7 @@
     "allowlist": "node scripts/generate-merkle-tree.js prod",
     "build:with-ir": "forge build --extra-output ir",
     "build": "forge build",
-    "chain": "npx hardhat node",
+    "chain": "anvil --fork-url https://mainnet.infura.io/v3/$INFURA_API_KEY",
     "generate-ir": "cat ./out/ProtoGravaNFT.sol/ProtoGravaNFT.json | jq -r .ir | perl -pe 's/\\n/\n/g' > ./out/ir.sol",
     "lint:check": "yarn prettier:check && yarn solhint:check",
     "lint": "yarn prettier && yarn solhint",
@@ -39,7 +39,6 @@
   "dependencies": {
     "dotenv": "^16.0.0",
     "ethers": "^5.5.2",
-    "hardhat": "^2.9.1",
     "keccak256": "^1.0.6",
     "merkletreejs": "^0.2.27"
   }

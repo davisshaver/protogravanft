@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "base64-sol/base64.sol";
 import "ds-test/test.sol";
 import "forge-std/Vm.sol";
+import "forge-std/console.sol";
 import "./utils/ProtoGravaNFTTest.sol";
 import {Defaults, Events} from "../ProtoGravaNFT.sol";
 
@@ -83,6 +84,21 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
             }
         }
         return found;
+    }
+
+    /// @notice Basic integer from address test. (Currently WIP.)
+    function testIntegerFromAddress() public pure {
+        require(uint256(uint160(address(0))) == 0, "Integer from address");
+    }
+
+    /// @notice Integer from address test for VB. (Currently WIP.)
+    function testIntegerFromAddressVB() public pure {
+        require(
+            uint256(
+                uint160(address(0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B))
+            ) == 978200031609045874420567273872976536139233684635,
+            "Integer from address"
+        );
     }
 
     /// @notice Default description should be updatable
