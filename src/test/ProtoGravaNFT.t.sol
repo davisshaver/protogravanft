@@ -182,7 +182,7 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         assertEq(alicePreBalance, 0);
         assertEq(alicePostBalance, 1);
         assertEq(protogravanft.totalSupply(), 1);
-        assertEq(protogravanft.ownerOf(0), alice.getAddress());
+        assertEq(protogravanft.ownerOf(1), alice.getAddress());
     }
 
     /// @notice Allow Alice to mint a token for approved hash but not to transfer
@@ -196,9 +196,9 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         assertEq(alicePreBalance, 0);
         assertEq(alicePostBalance, 1);
         assertEq(protogravanft.totalSupply(), 1);
-        assertEq(protogravanft.ownerOf(0), alice.getAddress());
+        assertEq(protogravanft.ownerOf(1), alice.getAddress());
         hevm.expectRevert(abi.encodeWithSignature("TransferLimitReached()"));
-        alice.transferFrom(charlieAddress, 0);
+        alice.transferFrom(charlieAddress, 1);
     }
 
     /// @notice Allow Alice to mint a token for approved hash and transfer once, not twice
@@ -212,11 +212,11 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         assertEq(alicePreBalance, 0);
         assertEq(alicePostBalance, 1);
         assertEq(protogravanft.totalSupply(), 1);
-        assertEq(protogravanft.ownerOf(0), alice.getAddress());
-        alice.transferFrom(charlieAddress, 0);
-        assertEq(protogravanft.ownerOf(0), charlie.getAddress());
+        assertEq(protogravanft.ownerOf(1), alice.getAddress());
+        alice.transferFrom(charlieAddress, 1);
+        assertEq(protogravanft.ownerOf(1), charlie.getAddress());
         hevm.expectRevert(abi.encodeWithSignature("TransferLimitReached()"));
-        charlie.transferFrom(aliceAddress, 0);
+        charlie.transferFrom(aliceAddress, 1);
     }
 
     /// @notice Allow Alice to mint a token for approved hash and then burn it
@@ -230,22 +230,24 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         assertEq(alicePreBalance, 0);
         assertEq(alicePostBalance, 1);
         assertEq(protogravanft.totalSupply(), 1);
-        assertEq(protogravanft.ownerOf(0), alice.getAddress());
+        assertEq(protogravanft.ownerOf(1), alice.getAddress());
         hevm.expectRevert(abi.encodeWithSignature("NotAllowedToBurn()"));
-        charlie.burn(0);
-        assertEq(protogravanft.ownerOf(0), alice.getAddress());
-        alice.burn(0);
+        charlie.burn(1);
+        assertEq(protogravanft.ownerOf(1), alice.getAddress());
+        assertEq(protogravanft.totalSupply(), 1);
+        alice.burn(1);
         hevm.expectRevert(bytes("NOT_MINTED"));
-        assertEq(protogravanft.ownerOf(0), address(0));
+        assertEq(protogravanft.ownerOf(1), address(0));
         assertEq(alice.tokenBalance(), 0);
+        assertEq(protogravanft.totalSupply(), 0);
     }
 
     /// @notice Ensure token ID increments correctly
     function testAliceCharlieMint() public {
         alice.mint(approvedGravatarHashAlice, correctProofAlice, 0);
         charlie.mint(approvedGravatarHashCharlie, correctProofCharlie, 0);
-        assertEq(protogravanft.ownerOf(0), alice.getAddress());
-        assertEq(protogravanft.ownerOf(1), charlie.getAddress());
+        assertEq(protogravanft.ownerOf(1), alice.getAddress());
+        assertEq(protogravanft.ownerOf(2), charlie.getAddress());
     }
 
     /// @notice Do not allow Alice to mint a token for unapproved hash
@@ -291,7 +293,7 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         (
             string memory aliceTokenNamePre,
             bool aliceTokenHasEnsPre
-        ) = protogravanft.getTokenName(0);
+        ) = protogravanft.getTokenName(1);
         string memory aliceAddressString = Strings.toHexString(
             uint256(uint160(alice.getAddress())),
             20
@@ -300,14 +302,14 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         assertTrue(!aliceTokenHasEnsPre);
         alice.transferFrom(
             address(0xaf045Cb0dBC1225948482e4692Ec9dC7Bb3cD48b),
-            0
+            1
         );
         (
             string memory aliceTokenNamePost,
             bool aliceTokenHasEnsPost
-        ) = protogravanft.getTokenName(0);
+        ) = protogravanft.getTokenName(1);
         string memory aliceTokenBase64Post = protogravanft
-            .generateTokenURIBase64(0);
+            .generateTokenURIBase64(1);
         assertTrue(aliceTokenHasEnsPost);
         bytes memory aliceTokenURIPostDecoded = Base64.decode(
             aliceTokenBase64Post
@@ -371,9 +373,9 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         hevm.store(
             address(protogravanft),
             bytes32(uint256(9)),
-            bytes32(protogravanft.MAX_TOTAL_SUPPLY())
+            bytes32(protogravanft.MAX_TOTAL_MINTED())
         );
-        assertEq(protogravanft.MAX_TOTAL_SUPPLY(), type(uint256).max - 1);
+        assertEq(protogravanft.MAX_TOTAL_MINTED(), type(uint256).max - 1);
         hevm.expectRevert(abi.encodeWithSignature("NoTokensLeft()"));
         alice.mint(approvedGravatarHashAlice, correctProofAlice, 0);
     }

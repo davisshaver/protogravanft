@@ -58,15 +58,18 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
                             IMMUTABLE STORAGE
     //////////////////////////////////////////////////////////////*/
 
-    /// @notice Max total supply of token
-    uint256 public constant MAX_TOTAL_SUPPLY = type(uint256).max - 1;
+    /// @notice Max total number of minted tokens
+    uint256 public constant MAX_TOTAL_MINTED = type(uint256).max - 1;
 
     /*//////////////////////////////////////////////////////////////
                              MUTABLE STORAGE
     //////////////////////////////////////////////////////////////*/
 
-    /// @notice Current total supply of token
-    uint256 public totalSupply;
+    /// @notice Current total number of minted tokens
+    uint256 public totalMinted;
+
+    /// @notice Current total number of burned tokens
+    uint256 public totalBurned;
 
     /// @notice Mapping of ids to hashes
     mapping(uint256 => string) private gravIDsToHashes;
@@ -141,6 +144,14 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
         defaultFormat = Defaults.DefaultForDefaultImage;
         description = Defaults.DefaultDescription;
         merkleRoot = _merkleRoot;
+    }
+
+    /// @notice Get total non-burned supply of token
+    /// @return result for totalSupply check
+    function totalSupply() public view returns (uint256 result) {
+        unchecked {
+            result = totalMinted - totalBurned;
+        }
     }
 
     /// @notice Get name of a token
@@ -312,13 +323,13 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
         bytes32[] calldata proof,
         uint128 transferLimit
     ) external {
-        if (totalSupply + 1 >= MAX_TOTAL_SUPPLY) revert NoTokensLeft();
+        if (totalMinted + 1 >= MAX_TOTAL_MINTED) revert NoTokensLeft();
 
         bytes32 leaf = keccak256(abi.encodePacked(gravatarHash, msg.sender));
         bool isValidLeaf = MerkleProof.verify(proof, merkleRoot, leaf);
         if (!isValidLeaf) revert NotInMerkle();
 
-        uint256 newItemId = totalSupply++;
+        uint256 newItemId = ++totalMinted;
         gravIDsToHashes[newItemId] = gravatarHash;
         gravIDsToTransferLimits[newItemId] = transferLimit;
 
@@ -332,6 +343,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
     function burn(uint256 id) external {
         if (msg.sender != _ownerOf[id]) revert NotAllowedToBurn();
         _burn(id);
+        totalBurned++;
         delete gravIDsToHashes[id];
         delete gravIDsToTransfers[id];
         delete gravIDsToTransferLimits[id];
