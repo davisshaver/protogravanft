@@ -8,6 +8,20 @@ import "./utils/LilENSTest.sol";
 contract LilENSTestContract is LilENSTest {
     Vm internal constant hevm = Vm(HEVM_ADDRESS);
 
+    /// @notice Address to ENS lookup (Vitalik)
+    function testAddrToENSVitalik() public view {
+        require(
+            keccak256(
+                abi.encodePacked(
+                    enstest.addrToENS(
+                        0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
+                    )[0]
+                )
+            ) == keccak256(abi.encodePacked("vitalik.eth")),
+            "Address to ENS lookup failed"
+        );
+    }
+
     /// @notice Address to ENS lookup
     function testAddrToENS() public view {
         require(
