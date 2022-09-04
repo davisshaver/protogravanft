@@ -316,6 +316,15 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         );
         assertTrue(
             contains(
+                "davisshaver.eth",
+                abi.decode(
+                    hevm.parseJson(string(aliceTokenURIPostDecoded), ".name"),
+                    (string)
+                )
+            )
+        );
+        assertTrue(
+            contains(
                 '"name": "davisshaver.eth",',
                 string(aliceTokenURIPostDecoded)
             )
