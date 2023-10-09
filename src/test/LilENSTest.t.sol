@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.20;
 
 import "ds-test/test.sol";
 import "forge-std/Vm.sol";
@@ -28,7 +28,7 @@ contract LilENSTestContract is LilENSTest {
             keccak256(
                 abi.encodePacked(
                     enstest.addrToENS(
-                        0xaf045Cb0dBC1225948482e4692Ec9dC7Bb3cD48b
+                        0x0F9Bd2a9E0D30f121c525DB5419A07b08Fce8440
                     )[0]
                 )
             ) == keccak256(abi.encodePacked("davisshaver.eth")),
@@ -55,7 +55,7 @@ contract LilENSTestContract is LilENSTest {
         // Namehash of davisshaver.eth.
         bytes32 testNameHash = 0x83e599a723b25a15ed6a3b6f4957b094beae097bbbe1c3a205208a67d3cf9063;
         // Known resolver of davisshaver.eth.
-        address expectedResolver = 0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41;
+        address expectedResolver = 0x231b0Ee14048e9dCcD1d247744d114a4EB5E8E63;
         require(
             address(enstest.getResolver(testNameHash)) == expectedResolver,
             "Resolver lookup failed"
@@ -78,7 +78,7 @@ contract LilENSTestContract is LilENSTest {
     function testENSToAddr() public view {
         require(
             enstest.ensToAddr("davisshaver.eth") ==
-                0xaf045Cb0dBC1225948482e4692Ec9dC7Bb3cD48b,
+                0x0F9Bd2a9E0D30f121c525DB5419A07b08Fce8440,
             "ENS to address lookup failed"
         );
     }

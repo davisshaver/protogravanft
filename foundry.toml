@@ -4,7 +4,7 @@ ffi = false
 fuzz_runs = 1000
 optimizer = true
 optimizer_runs = 1000000
-solc_version = "0.8.16"
+solc_version = "0.8.20"
 gas_reports = ["ProtoGravaNFT"]
 
 [profile.ci]
