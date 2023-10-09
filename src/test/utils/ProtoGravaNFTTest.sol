@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.20;
 
 /// ============ External Imports ============
 
@@ -27,10 +27,10 @@ abstract contract ProtoGravaNFTTest is DSTest {
             "ProtoGravaNFT",
             "PROTOGRAV",
             // Merkle root w/ Alice & Charlie allowed, but no Bob
-            0xf410dc13458d3fcdf2e6238d6849c17974685fa9b940848daf9f877b99b74c0f
+            0x84b89b6fc1e4c5386ace0530319d3b5609933b893ee8f48a1c1c43cd76428ffe
         );
-        alice = new ProtoGravaNFTUser(protogravanft); // 0x185a4dc360ce69bdccee33b3784b0282f7961aea
-        bob = new ProtoGravaNFTUser(protogravanft); // 0xefc56627233b02ea95bae7e19f648d7dcd5bb132
-        charlie = new ProtoGravaNFTUser(protogravanft); // 0xf5a2fe45f4f1308502b1c136b9ef8af136141382
+        alice = new ProtoGravaNFTUser(protogravanft); // 0x2e234dae75c793f67a35089c9d99245e1c58470b
+        bob = new ProtoGravaNFTUser(protogravanft); // 0xf62849f9a0b5bf2913b396098f7c7019b51a820a
+        charlie = new ProtoGravaNFTUser(protogravanft); // 0x5991a2df15a8f6a256d3ec51e99254cd3fb576a9
     }
 }

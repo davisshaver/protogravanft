@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "base64-sol/base64.sol";
@@ -14,10 +14,13 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
 
     bytes32[] internal correctProofAlice = [
         bytes32(
-            0x27a89e7e429a749efe6f0bb28e5b9454dc31d06efa093a771a811c6d0a30974f
+            0x779d436bdea59dffcaf91f569386d8ba9b47bb3b6da0858409371af3821fd506
         ),
         bytes32(
             0x5ba39d6a23933f83b06f5f4439d7eb891dbbc59250ff8f3109fd821802847b23
+        ),
+        bytes32(
+            0xe042314c1bef208596bdfb11227c3519b3ccc0c913455dd6e27630640edb003e
         )
     ];
     bytes32[] internal incorrectProofBob = [
@@ -30,10 +33,13 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
     ];
     bytes32[] internal correctProofCharlie = [
         bytes32(
-            0x705a8b4d085d439bfde84fe72ff1f879c9483c92176633d114e47022484b85ac
+            0x09a9f8ba860a103965d553c18bd96428ad0d67319f62335f870b4d1ea28d4fb1
         ),
         bytes32(
             0x5ba39d6a23933f83b06f5f4439d7eb891dbbc59250ff8f3109fd821802847b23
+        ),
+        bytes32(
+            0xe042314c1bef208596bdfb11227c3519b3ccc0c913455dd6e27630640edb003e
         )
     ];
     string internal approvedGravatarHashAlice =
@@ -42,10 +48,10 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         "11111111111111111111111111111111";
     string internal approvedGravatarHashCharlie =
         "22222222222222222222222222222222";
-    address internal aliceAddress = 0x185a4dc360CE69bDCceE33b3784B0282f7961aea;
-    address internal bobAddress = 0xEFc56627233b02eA95bAE7e19F648d7DcD5Bb132;
+    address internal aliceAddress = 0x2e234DAe75C793f67A35089C9d99245E1C58470b;
+    address internal bobAddress = 0xF62849F9A0B5Bf2913b396098F7c7019b51A820a;
     address internal charlieAddress =
-        0xf5a2fE45F4f1308502b1C136b9EF8af136141382;
+        0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9;
 
     /// @notice Default description should be set in constructor
     function testDescriptionDefaultGet() public view {
@@ -301,7 +307,7 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         assertEq(aliceTokenNamePre, aliceAddressString);
         assertTrue(!aliceTokenHasEnsPre);
         alice.transferFrom(
-            address(0xaf045Cb0dBC1225948482e4692Ec9dC7Bb3cD48b),
+            address(0x0F9Bd2a9E0D30f121c525DB5419A07b08Fce8440),
             1
         );
         (
@@ -349,7 +355,7 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         );
         assertTrue(
             contains(
-                '"trait_type": "URL", "value": "https://davisshaver.com/"',
+                '"trait_type": "URL", "value": "https://davisshaver.com"',
                 string(aliceTokenURIPostDecoded)
             )
         );
@@ -361,7 +367,7 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         );
         assertTrue(
             contains(
-                '"trait_type": "Discord", "value": "davisshaver#4551"',
+                '"trait_type": "Discord", "value": "davisshaver"',
                 string(aliceTokenURIPostDecoded)
             )
         );
