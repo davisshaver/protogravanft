@@ -21,7 +21,7 @@
   "scripts": {
     "build:with-ir": "forge build --extra-output ir",
     "build": "forge build",
-    "build:slither": "forge build --build-info --skip */test/** */script/** --force",
+    "build:slither": "forge build --build-info --skip */test/** */test/*/** */script/** --force",
     "chain": "anvil --fork-url https://mainnet.infura.io/v3/$INFURA_API_KEY",
     "clean": "forge clean",
     "generate-ir": "cat ./out/ProtoGravaNFT.sol/ProtoGravaNFT.json | jq -r .ir | perl -pe 's/\\n/\n/g' > ./out/ir.sol",
