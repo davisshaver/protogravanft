@@ -13,11 +13,11 @@ abstract contract LilENS {
 
     /// @notice Reverse records contract address
     // @todo Make this configurable for different networks
-    address public ensReverseContractLookupAddress =
+    address public constant ensReverseContractLookupAddress =
         address(0x3671aE578E63FdF66ad4F3E12CC0c0d71Ac7510C);
 
     /// @notice ENS registry contract
-    ENS public ens = ENS(0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e);
+    ENS public constant ens = ENS(0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e);
 
     /// @notice Find ENS names for a given address
     /// @param addr to lookup

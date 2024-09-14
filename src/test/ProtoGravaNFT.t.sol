@@ -17,7 +17,7 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
     function testDescriptionDefaultGet() public view {
         assertEq(
             keccak256(abi.encodePacked(protogravanft.getDescription())),
-            keccak256(abi.encodePacked(Defaults.DefaultDescription))
+            keccak256(abi.encodePacked(Defaults.DEFAULT_DESCRIPTION))
         );
     }
 
@@ -69,7 +69,7 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
     function testDefaultFormatDefaultGet() public view {
         assertEq(
             keccak256(abi.encodePacked(protogravanft.getDefaultImageFormat())),
-            keccak256(abi.encodePacked(Defaults.DefaultForDefaultImage))
+            keccak256(abi.encodePacked(Defaults.DEFAULT_FOR_DEFAULT_IMAGE))
         );
     }
 
@@ -291,7 +291,7 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         // @TODO Add some documentation here, magical storage slot number.
         vm.store(
             address(protogravanft),
-            bytes32(uint256(9)),
+            bytes32(uint256(7)),
             bytes32(protogravanft.MAX_TOTAL_MINTED())
         );
         assertEq(protogravanft.MAX_TOTAL_MINTED(), type(uint256).max - 1);

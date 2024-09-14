@@ -67,12 +67,12 @@ abstract contract LilHash {
     }
 
     /// @notice Converts bytes32 to string
-    /// @param _bytes32 bytes32 to convert
+    /// @param convertBytes bytes32 to convert
     /// @return Converted string
     function bytes32ToString(
-        bytes32 _bytes32
+        bytes32 convertBytes
     ) public pure returns (string memory) {
-        return string(abi.encodePacked(_bytes32));
+        return string(abi.encodePacked(convertBytes));
     }
 
     /// @notice Converts bytes32 to hex string

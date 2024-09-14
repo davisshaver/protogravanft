@@ -22,9 +22,9 @@ import {LilHash} from "./LilHash.sol";
 //////////////////////////////////////////////////////////////*/
 
 library Defaults {
-    string internal constant DefaultDescription =
+    string internal constant DEFAULT_DESCRIPTION =
         "Globally Recognized Avatars on the Ethereum Blockchain";
-    string internal constant DefaultForDefaultImage = "robohash";
+    string internal constant DEFAULT_FOR_DEFAULT_IMAGE = "robohash";
 }
 
 /*//////////////////////////////////////////////////////////////
@@ -122,8 +122,8 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
         string memory _name,
         string memory _symbol
     ) ERC721(_name, _symbol) {
-        defaultFormat = Defaults.DefaultForDefaultImage;
-        description = Defaults.DefaultDescription;
+        defaultFormat = Defaults.DEFAULT_FOR_DEFAULT_IMAGE;
+        description = Defaults.DEFAULT_DESCRIPTION;
     }
 
     /// @notice Get total non-burned supply of token
@@ -268,7 +268,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
         returns (string memory generatedTokenURIBase64)
     {
         (string memory tokenName, bool hasEnsName) = getTokenName(id);
-        if (hasEnsName == false) {
+        if (!hasEnsName) {
             revert NoENSName();
         }
         string memory emailAddress = ensToText(tokenName, "email");
@@ -359,21 +359,21 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
     }
 
     /// @notice Update default Gravatar image format for future tokens
-    /// @param _defaultFormat for Gravatar image API
+    /// @param newDefaultFormat for Gravatar image API
     function ownerSetDefaultFormat(
-        string calldata _defaultFormat
+        string calldata newDefaultFormat
     ) public onlyContractOwner {
-        defaultFormat = _defaultFormat;
+        defaultFormat = newDefaultFormat;
 
         emit Events.DefaultFormatChanged(defaultFormat);
     }
 
     /// @notice Update default Gravatar image format for future tokens
-    /// @param _description for tokens
+    /// @param newDescription for tokens
     function ownerSetDescription(
-        string calldata _description
+        string calldata newDescription
     ) public onlyContractOwner {
-        description = _description;
+        description = newDescription;
 
         emit Events.DescriptionChanged(description);
     }

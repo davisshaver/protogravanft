@@ -14,6 +14,9 @@ abstract contract LilOwnable {
     /// @notice Thrown if non-owner attempts to transfer
     error NotOwner();
 
+    /// @notice Thrown if zero address is used
+    error ZeroAddress();
+
     /// ============ Events ============
 
     /// @notice Emitted after ownership is transferred
@@ -37,11 +40,12 @@ abstract contract LilOwnable {
     }
 
     /// @notice Transfer ownership of contract
-    /// @param _newOwner of contract
-    function transferOwnership(address _newOwner) external {
+    /// @param newOwner of contract
+    function transferOwnership(address newOwner) external {
         if (msg.sender != _owner) revert NotOwner();
-
-        _owner = _newOwner;
+        if (newOwner == address(0)) revert ZeroAddress();
+        emit OwnershipTransferred(_owner, newOwner);
+        _owner = newOwner;
     }
 
     /// @notice Renounce ownership of contract
