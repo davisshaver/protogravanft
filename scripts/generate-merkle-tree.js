@@ -1,7 +1,6 @@
 const { MerkleTree } = require('merkletreejs');
 const fs = require('fs');
 const keccak256 = require('keccak256');
-const path = require('path');
 const { getAddress, solidityKeccak256 } = require('ethers/lib/utils');
 
 const allowlist = require('../config/allowlist.json');

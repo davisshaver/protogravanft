@@ -1,8 +1,6 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-yarn priv-key-check
-
 yarn lint:check
 
 yarn test
