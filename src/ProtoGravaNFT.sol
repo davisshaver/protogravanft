@@ -16,6 +16,7 @@ import "solmate/tokens/ERC721.sol";
 import "./LilBase64.sol";
 import "./LilENS.sol";
 import "./LilOwnable.sol";
+import "./LilHash.sol";
 
 /*//////////////////////////////////////////////////////////////
                             DEFAULTS
@@ -53,7 +54,7 @@ library Events {
 /// @title ProtoGravaNFT
 /// @notice Gravatar-powered ERC721 claimable by members of a Merkle tree
 /// @author Davis Shaver <davisshaver@gmail.com>
-contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
+contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
     /*//////////////////////////////////////////////////////////////
                             IMMUTABLE STORAGE
     //////////////////////////////////////////////////////////////*/
@@ -112,6 +113,12 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
 
     /// @notice Thrown if a non-existent token is queried
     error DoesNotExist();
+
+    /// @notice Thrown if the address does not have an ENS name
+    error NoENSName();
+
+    /// @notice Thrown if the ENS profile does not have an email address
+    error NoENSEmailTextRecord();
 
     /// @notice Thrown if unauthorized user tries to burn token
     error NotAuthorized();
@@ -286,6 +293,14 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
         returns (string memory generatedTokenURIBase64)
     {
         (string memory tokenName, bool hasEnsName) = getTokenName(id);
+        if (hasEnsName == false) {
+            revert NoENSName();
+        }
+        string memory emailAddress = ensToText(tokenName, "email");
+        if (bytes(emailAddress).length == 0) {
+            revert NoENSEmailTextRecord();
+        }
+        string memory hashedEmail = hashNormalizedString(emailAddress);
         string memory tokenAttributes = hasEnsName
             ? getTokenAttributes(tokenName)
             : '"attributes": []';
@@ -297,7 +312,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable {
                     '", "description": "',
                     description,
                     '", "image": "https://secure.gravatar.com/avatar/',
-                    gravIDsToHashes[id],
+                    hashedEmail,
                     "?s=2048&d=",
                     defaultFormat,
                     '", "background_color": "4678eb", ',

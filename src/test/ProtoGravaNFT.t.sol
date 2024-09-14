@@ -292,6 +292,14 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         assertEq(aliceTokenURIPre, aliceTokenURIPost);
     }
 
+    /// @notice Ensure that we can hash an email address and get the expected result
+    function testHashEmail() public {
+        assertEq(
+            protogravanft.hashNormalizedString("davisshaver@gmail.com"),
+            "599d7678a2ae568980365f733917d796443920f39fab95dc8a590618ddf6fe8f"
+        );
+    }
+
     /* solhint-disable quotes */
     /// @notice Check for expected ENS attributes after transfer
     function testAliceMintTransferENSAttributes() public {
