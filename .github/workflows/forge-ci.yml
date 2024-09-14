@@ -39,7 +39,9 @@ jobs:
         env:
           INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
 
-      - run: yarn build
+      - run: yarn clean
+
+      - run: yarn build:slither
 
       - name: Run Slither
         uses: crytic/slither-action@v0.4.0
