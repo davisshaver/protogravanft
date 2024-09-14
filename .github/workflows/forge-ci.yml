@@ -40,7 +40,7 @@ jobs:
           INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
 
       - name: Run Slither
-        uses: crytic/slither-action
+        uses: crytic/slither-action@v0.4.0
         id: slither
         with:
           sarif: results.sarif
