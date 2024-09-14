@@ -20,7 +20,7 @@
   },
   "scripts": {
     "build:with-ir": "forge build --extra-output ir",
-    "build": "forge build",
+    "build": "forge build --build-info",
     "chain": "anvil --fork-url https://mainnet.infura.io/v3/$INFURA_API_KEY",
     "generate-ir": "cat ./out/ProtoGravaNFT.sol/ProtoGravaNFT.json | jq -r .ir | perl -pe 's/\\n/\n/g' > ./out/ir.sol",
     "lint:check": "yarn prettier:check && yarn solhint:check",

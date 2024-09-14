@@ -39,10 +39,13 @@ jobs:
         env:
           INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
 
+      - run: yarn build
+
       - name: Run Slither
         uses: crytic/slither-action@v0.4.0
         id: slither
         with:
+          ignore-compile: true
           sarif: results.sarif
           fail-on: none
 
