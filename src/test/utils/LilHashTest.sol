@@ -7,20 +7,20 @@ import {Test} from "forge-std/Test.sol";
 
 /// ============ Internal Imports ============
 
-import {LilENS} from "../../LilENS.sol";
+import {LilHash} from "../../LilHash.sol";
 
 /* solhint-disable no-empty-blocks */
-contract LilENSExample is LilENS {}
+contract LilHashExample is LilHash {}
 
 /* solhint-enable no-empty-blocks */
 
-abstract contract LilENSTest is Test {
+abstract contract LilHashTest is Test {
     /// ============ Storage ============
 
-    /// @dev LilENS contract
-    LilENS internal enstest;
+    /// @dev LilHash contract
+    LilHash internal hashtest;
 
     function setUp() public virtual {
-        enstest = new LilENSExample();
+        hashtest = new LilHashExample();
     }
 }

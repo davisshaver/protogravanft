@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.27;
 
 /// @title Strings
 /// @notice Adapted from https://github.com/ensdomains/reverse-records/blob/master/contracts/Namehash.sol
@@ -56,7 +56,7 @@ library NamehashStrings {
 
         if (needlelen <= selflen) {
             if (needlelen <= 32) {
-                bytes32 mask = bytes32(~(2**(8 * (32 - needlelen)) - 1));
+                bytes32 mask = bytes32(~(2 ** (8 * (32 - needlelen)) - 1));
 
                 bytes32 needledata;
                 /* solhint-disable no-inline-assembly */

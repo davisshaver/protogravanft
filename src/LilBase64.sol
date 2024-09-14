@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.20;
+pragma solidity 0.8.27;
 
 /// [MIT License]
 /// @title LilBase64
@@ -29,9 +29,7 @@ library LilBase64 {
 
             for {
                 let i := 0
-            } lt(i, len) {
-
-            } {
+            } lt(i, len) {} {
                 i := add(i, 3)
                 let input := and(mload(add(data, i)), 0xffffff)
 
