@@ -1,22 +1,20 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.27;
 
 /// ============ External Imports ============
 
-import "ds-test/test.sol";
+import {Test} from "forge-std/Test.sol";
 
 /// ============ Internal Imports ============
 
-import "../../LilENS.sol";
+import {LilENS} from "../../LilENS.sol";
 
 /* solhint-disable no-empty-blocks */
-contract LilENSExample is LilENS {
-
-}
+contract LilENSExample is LilENS {}
 
 /* solhint-enable no-empty-blocks */
 
-abstract contract LilENSTest is DSTest {
+abstract contract LilENSTest is Test {
     /// ============ Storage ============
 
     /// @dev LilENS contract

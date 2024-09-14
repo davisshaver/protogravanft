@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.27;
 
 /// @title LilHash
 /// @notice Lil' helper library for normalizing and hashing strings
@@ -8,11 +8,9 @@ abstract contract LilHash {
     /// @notice Normalizes and hashes string
     /// @param stringToHash String to hash
     /// @return Hashed string
-    function hashNormalizedString(string memory stringToHash)
-        public
-        pure
-        returns (string memory)
-    {
+    function hashNormalizedString(
+        string memory stringToHash
+    ) public pure returns (string memory) {
         return toHexString(hashString(trim(toLowerCase(stringToHash))));
     }
 
@@ -42,11 +40,9 @@ abstract contract LilHash {
     /// @notice Converts all characters in string to lowercase
     /// @param str String to convert
     /// @return Lowercase string
-    function toLowerCase(string memory str)
-        public
-        pure
-        returns (string memory)
-    {
+    function toLowerCase(
+        string memory str
+    ) public pure returns (string memory) {
         bytes memory bStr = bytes(str);
         bytes memory bLower = new bytes(bStr.length);
 
@@ -73,11 +69,9 @@ abstract contract LilHash {
     /// @notice Converts bytes32 to string
     /// @param _bytes32 bytes32 to convert
     /// @return Converted string
-    function bytes32ToString(bytes32 _bytes32)
-        public
-        pure
-        returns (string memory)
-    {
+    function bytes32ToString(
+        bytes32 _bytes32
+    ) public pure returns (string memory) {
         return string(abi.encodePacked(_bytes32));
     }
 

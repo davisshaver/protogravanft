@@ -1,22 +1,20 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.27;
 
 /// ============ External Imports ============
 
-import "ds-test/test.sol";
+import {Test} from "forge-std/Test.sol";
 
 /// ============ Internal Imports ============
 
-import "../../LilHash.sol";
+import {LilHash} from "../../LilHash.sol";
 
 /* solhint-disable no-empty-blocks */
-contract LilHashExample is LilHash {
-
-}
+contract LilHashExample is LilHash {}
 
 /* solhint-enable no-empty-blocks */
 
-abstract contract LilHashTest is DSTest {
+abstract contract LilHashTest is Test {
     /// ============ Storage ============
 
     /// @dev LilHash contract

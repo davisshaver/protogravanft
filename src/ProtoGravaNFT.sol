@@ -1,22 +1,21 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.27;
 
 /*//////////////////////////////////////////////////////////////
                         EXTERNAL IMPORTS
 //////////////////////////////////////////////////////////////*/
 
-import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-import "solmate/tokens/ERC721.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+import {ERC721} from "solmate/tokens/ERC721.sol";
 
 /*//////////////////////////////////////////////////////////////
                         INTERNAL IMPORTS
 //////////////////////////////////////////////////////////////*/
 
-import "./LilBase64.sol";
-import "./LilENS.sol";
-import "./LilOwnable.sol";
-import "./LilHash.sol";
+import {LilBase64} from "./LilBase64.sol";
+import {LilENS} from "./LilENS.sol";
+import {LilOwnable} from "./LilOwnable.sol";
+import {LilHash} from "./LilHash.sol";
 
 /*//////////////////////////////////////////////////////////////
                             DEFAULTS
@@ -35,12 +34,7 @@ library Defaults {
 library Events {
     /// @notice Emitted after a successful mint
     /// @param to which address
-    /// @param hash that was claimed
-    event Mint(address indexed to, string hash);
-
-    /// @notice Emitted after Merkle root is changed
-    /// @param newMerkleRoot for validating claims
-    event MerkleRootChanged(bytes32 newMerkleRoot);
+    event Mint(address indexed to);
 
     /// @notice Emitted after description is changed
     /// @param newDescription for all tokens
@@ -52,7 +46,7 @@ library Events {
 }
 
 /// @title ProtoGravaNFT
-/// @notice Gravatar-powered ERC721 claimable by members of a Merkle tree
+/// @notice Gravatar-powered ERC721 claimable by anyone
 /// @author Davis Shaver <davisshaver@gmail.com>
 contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
     /*//////////////////////////////////////////////////////////////
@@ -71,18 +65,6 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
 
     /// @notice Current total number of burned tokens
     uint256 public totalBurned;
-
-    /// @notice Mapping of ids to hashes
-    mapping(uint256 => string) private gravIDsToHashes;
-
-    /// @notice Mapping of ids to number of transfers
-    mapping(uint256 => uint256) private gravIDsToTransfers;
-
-    /// @notice Mapping of ids to transfer limits
-    mapping(uint256 => uint256) private gravIDsToTransferLimits;
-
-    /// @notice Merkle root
-    bytes32 public merkleRoot;
 
     /// @notice Default fallback image
     string public defaultFormat;
@@ -120,20 +102,14 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
     /// @notice Thrown if the ENS profile does not have an email address
     error NoENSEmailTextRecord();
 
-    /// @notice Thrown if unauthorized user tries to burn token
-    error NotAuthorized();
-
     /// @notice Thrown if total supply is exceeded
     error NoTokensLeft();
 
     /// @notice Thrown if burn attempted on token not owned by address
     error NotAllowedToBurn();
 
-    /// @notice Thrown if address/hash are not part of Merkle tree
-    error NotInMerkle();
-
-    /// @notice Thrown if transfer limit reached & prevents transfer
-    error TransferLimitReached();
+    /// @notice Thrown if user attempts to mint more than one token
+    error OnePerUser();
 
     /*//////////////////////////////////////////////////////////////
                                CONSTRUCTOR
@@ -142,15 +118,12 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
     /// @notice Creates a new ProtoGravaNFT contract
     /// @param _name of token
     /// @param _symbol of token
-    /// @param _merkleRoot of claimees
     constructor(
         string memory _name,
-        string memory _symbol,
-        bytes32 _merkleRoot
+        string memory _symbol
     ) ERC721(_name, _symbol) {
         defaultFormat = Defaults.DefaultForDefaultImage;
         description = Defaults.DefaultDescription;
-        merkleRoot = _merkleRoot;
     }
 
     /// @notice Get total non-burned supply of token
@@ -166,7 +139,9 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
     /// @param id for token being generated
     /// @return tokenName for ID
     /// @return hasEnsName for ID
-    function getTokenName(uint256 id)
+    function getTokenName(
+        uint256 id
+    )
         public
         view
         tokenExists(id)
@@ -220,11 +195,9 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
     /// @notice Get attributes of a token
     /// @param ensName for owner of token being generated
     /// @return tokenAttributes for token
-    function getTokenAttributes(string memory ensName)
-        private
-        view
-        returns (string memory tokenAttributes)
-    {
+    function getTokenAttributes(
+        string memory ensName
+    ) private view returns (string memory tokenAttributes) {
         string memory tokenAttributesStart = '"attributes": [';
         string memory tokenAttributesEnd = "]";
         string memory locationAttribute = getAttribute(
@@ -286,7 +259,9 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
     /// @notice Generates base64 payload for token
     /// @param id for this specific token
     /// @return generatedTokenURIBase64 for this specific token
-    function generateTokenURIBase64(uint256 id)
+    function generateTokenURIBase64(
+        uint256 id
+    )
         public
         view
         tokenExists(id)
@@ -317,7 +292,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
                     defaultFormat,
                     '", "background_color": "4678eb", ',
                     '"external_url": "https://www.gravatar.com/',
-                    gravIDsToHashes[id],
+                    hashedEmail,
                     '", ',
                     tokenAttributes,
                     "}"
@@ -329,28 +304,16 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
     /* solhint-enable quotes */
 
     /// @notice Mint a token
-    /// @dev Note: Transfer limit not part of proof, set by minter
-    /// @param gravatarHash of token being minted
-    /// @param proof of Gravatar hash ownership
-    /// @param transferLimit of token
-    function mint(
-        string calldata gravatarHash,
-        bytes32[] calldata proof,
-        uint128 transferLimit
-    ) external {
+    function mint() external {
         if (totalMinted + 1 >= MAX_TOTAL_MINTED) revert NoTokensLeft();
 
-        bytes32 leaf = keccak256(abi.encodePacked(gravatarHash, msg.sender));
-        bool isValidLeaf = MerkleProof.verify(proof, merkleRoot, leaf);
-        if (!isValidLeaf) revert NotInMerkle();
+        if (balanceOf(msg.sender) > 0) revert OnePerUser();
 
         uint256 newItemId = ++totalMinted;
-        gravIDsToHashes[newItemId] = gravatarHash;
-        gravIDsToTransferLimits[newItemId] = transferLimit;
 
         _mint(msg.sender, newItemId);
 
-        emit Events.Mint(msg.sender, gravatarHash);
+        emit Events.Mint(msg.sender);
     }
 
     /// @notice Burn a token
@@ -359,9 +322,6 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
         if (msg.sender != _ownerOf[id]) revert NotAllowedToBurn();
         _burn(id);
         totalBurned++;
-        delete gravIDsToHashes[id];
-        delete gravIDsToTransfers[id];
-        delete gravIDsToTransferLimits[id];
     }
 
     /// @notice Transfer a token
@@ -373,16 +333,16 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
         address to,
         uint256 id
     ) public override {
-        if (gravIDsToTransfers[id] + 1 > gravIDsToTransferLimits[id])
-            revert TransferLimitReached();
+        if (balanceOf(to) > 0) revert OnePerUser();
         super.transferFrom(from, to, id);
-        gravIDsToTransfers[id] = gravIDsToTransfers[id] + 1;
     }
 
     /// @notice Gets URI for a specific token
     /// @param id of token being queried
     /// @return formattedTokenURI of token being queried
-    function tokenURI(uint256 id)
+    function tokenURI(
+        uint256 id
+    )
         public
         view
         override
@@ -400,10 +360,9 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
 
     /// @notice Update default Gravatar image format for future tokens
     /// @param _defaultFormat for Gravatar image API
-    function ownerSetDefaultFormat(string calldata _defaultFormat)
-        public
-        onlyContractOwner
-    {
+    function ownerSetDefaultFormat(
+        string calldata _defaultFormat
+    ) public onlyContractOwner {
         defaultFormat = _defaultFormat;
 
         emit Events.DefaultFormatChanged(defaultFormat);
@@ -411,22 +370,12 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
 
     /// @notice Update default Gravatar image format for future tokens
     /// @param _description for tokens
-    function ownerSetDescription(string calldata _description)
-        public
-        onlyContractOwner
-    {
+    function ownerSetDescription(
+        string calldata _description
+    ) public onlyContractOwner {
         description = _description;
 
         emit Events.DescriptionChanged(description);
-    }
-
-    /// @notice Set a new Merkle root
-    /// @dev This function may be replacable with an implementation of EIP-3668
-    /// @param _merkleRoot for validating claims
-    function ownerSetMerkleRoot(bytes32 _merkleRoot) public onlyContractOwner {
-        merkleRoot = _merkleRoot;
-
-        emit Events.MerkleRootChanged(merkleRoot);
     }
 
     /// @notice Get the description
@@ -444,7 +393,9 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
     /// @notice Declare supported interfaces
     /// @param interfaceId for support check
     /// @return interfaceSupported
-    function supportsInterface(bytes4 interfaceId)
+    function supportsInterface(
+        bytes4 interfaceId
+    )
         public
         pure
         override(LilOwnable, ERC721)

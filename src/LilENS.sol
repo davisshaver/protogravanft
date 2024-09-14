@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.27;
 
 /// ============ Internal Imports ============
 
-import "./Namehash.sol";
+import {Namehash} from "./Namehash.sol";
 
 /// @title LilENS
 /// @notice Lil' helper library for getting info from ENS
@@ -43,11 +43,10 @@ abstract contract LilENS {
     /// @param ensName ENS name to lookup
     /// @param key Text record key to lookup
     /// @return Text record if set
-    function ensToText(string memory ensName, string memory key)
-        public
-        view
-        returns (string memory)
-    {
+    function ensToText(
+        string memory ensName,
+        string memory key
+    ) public view returns (string memory) {
         bytes32 ensNameHash = Namehash.namehash(ensName);
         return text(ensNameHash, key);
     }
@@ -56,11 +55,10 @@ abstract contract LilENS {
     /// @param node Namehash for lookup
     /// @param key Text record key to lookup
     /// @return Text record if set
-    function text(bytes32 node, string memory key)
-        public
-        view
-        returns (string memory)
-    {
+    function text(
+        bytes32 node,
+        string memory key
+    ) public view returns (string memory) {
         Resolver resolver = ens.resolver(node);
         return resolver.text(node, key);
     }
@@ -103,11 +101,10 @@ abstract contract Resolver {
     /// @param node Namehash for lookup
     /// @param key Text record key to lookup
     /// @return Text record if set
-    function text(bytes32 node, string memory key)
-        public
-        view
-        virtual
-        returns (string memory);
+    function text(
+        bytes32 node,
+        string memory key
+    ) public view virtual returns (string memory);
 }
 
 /// @title ENS reverse records interface
@@ -115,9 +112,7 @@ abstract contract ReverseRecords {
     /// @notice Get names for addresses
     /// @param addresses Addresses to lookup
     /// @return names Corresponding names for addresses
-    function getNames(address[] calldata addresses)
-        external
-        view
-        virtual
-        returns (string[] memory names);
+    function getNames(
+        address[] calldata addresses
+    ) external view virtual returns (string[] memory names);
 }

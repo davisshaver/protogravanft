@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.27;
 
 /// @title LilOwnable
 /// @notice Ownable contract drop-in
@@ -53,12 +53,9 @@ abstract contract LilOwnable {
 
     /// @notice Declare supported interfaces
     /// @param interfaceId for support check
-    function supportsInterface(bytes4 interfaceId)
-        public
-        pure
-        virtual
-        returns (bool)
-    {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public pure virtual returns (bool) {
         return interfaceId == 0x7f5828d0; // ERC165 Interface ID for ERC173
     }
 }
