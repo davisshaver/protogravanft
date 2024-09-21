@@ -43,6 +43,10 @@ library Events {
     /// @notice Emitted after default format is changed
     /// @param newDefaultFormat for all tokens
     event DefaultFormatChanged(string newDefaultFormat);
+
+    /// @notice Emitted after public minting is toggled
+    /// @param isPublicMintEnabled for all tokens
+    event PublicMintToggled(bool isPublicMintEnabled);
 }
 
 /// @title ProtoGravaNFT
@@ -72,6 +76,8 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
     /// @notice Description
     string public description;
 
+    bool public isPublicMintEnabled;
+
     /*//////////////////////////////////////////////////////////////
                                 MODIFIERS
     //////////////////////////////////////////////////////////////*/
@@ -86,6 +92,13 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
     /// @param id for token being called
     modifier tokenExists(uint256 id) {
         if (_ownerOf[id] == address(0)) revert DoesNotExist();
+        _;
+    }
+
+    /// @notice Throws if called when public minting is disabled
+    modifier onlyWhenPublicMintEnabled() {
+        if (!isPublicMintEnabled && msg.sender != _owner)
+            revert PublicMintDisabled();
         _;
     }
 
@@ -111,6 +124,9 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
     /// @notice Thrown if user attempts to mint more than one token
     error OnePerUser();
 
+    /// @notice Thrown if public minting is disabled
+    error PublicMintDisabled();
+
     /*//////////////////////////////////////////////////////////////
                                CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
@@ -124,6 +140,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
     ) ERC721(_name, _symbol) {
         defaultFormat = Defaults.DEFAULT_FOR_DEFAULT_IMAGE;
         description = Defaults.DEFAULT_DESCRIPTION;
+        isPublicMintEnabled = true;
     }
 
     /// @notice Get total non-burned supply of token
@@ -304,7 +321,7 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
     /* solhint-enable quotes */
 
     /// @notice Mint a token
-    function mint() external {
+    function mint() external onlyWhenPublicMintEnabled {
         if (totalMinted + 1 >= MAX_TOTAL_MINTED) revert NoTokensLeft();
 
         if (balanceOf(msg.sender) > 0) revert OnePerUser();
@@ -356,6 +373,12 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
             )
         );
         return formattedTokenURI;
+    }
+
+    /// @notice Toggle public minting
+    function ownerTogglePublicMint() public onlyContractOwner {
+        isPublicMintEnabled = !isPublicMintEnabled;
+        emit Events.PublicMintToggled(isPublicMintEnabled);
     }
 
     /// @notice Update default Gravatar image format for future tokens

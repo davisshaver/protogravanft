@@ -109,6 +109,21 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         assertEq(charlie.getAddress(), charlieAddress);
     }
 
+    /// @notice Test that public minting is enabled by default
+    function testPublicMintDisabled() public view {
+        assertTrue(protogravanft.isPublicMintEnabled());
+    }
+
+    /// @notice Test that public minting can be disabled
+    function testPublicMintToggle() public {
+        protogravanft.ownerTogglePublicMint();
+        assertTrue(!protogravanft.isPublicMintEnabled());
+        vm.expectRevert(abi.encodeWithSignature("PublicMintDisabled()"));
+        alice.mint();
+        protogravanft.mint();
+        assertEq(protogravanft.balanceOf(address(this)), 1);
+    }
+
     /// @notice Allow Alice to mint a token for approved hash
     function testAliceMint() public {
         // Collect Alice balance of tokens before mint
