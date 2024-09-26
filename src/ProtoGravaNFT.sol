@@ -320,17 +320,27 @@ contract ProtoGravaNFT is ERC721, LilENS, LilOwnable, LilHash {
 
     /* solhint-enable quotes */
 
+    /// @notice Airdrop a token
+    function airdrop(address to) external onlyContractOwner {
+        mintTo(to);
+    }
+
     /// @notice Mint a token
     function mint() external onlyWhenPublicMintEnabled {
+        mintTo(msg.sender);
+    }
+
+    /// @notice Mint a token to an address
+    function mintTo(address to) internal {
         if (totalMinted + 1 >= MAX_TOTAL_MINTED) revert NoTokensLeft();
 
-        if (balanceOf(msg.sender) > 0) revert OnePerUser();
+        if (balanceOf(to) > 0) revert OnePerUser();
 
         uint256 newItemId = ++totalMinted;
 
-        _mint(msg.sender, newItemId);
+        _mint(to, newItemId);
 
-        emit Events.Mint(msg.sender);
+        emit Events.Mint(to);
     }
 
     /// @notice Burn a token

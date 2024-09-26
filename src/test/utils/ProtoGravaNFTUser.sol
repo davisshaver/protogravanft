@@ -39,6 +39,12 @@ contract ProtoGravaNFTUser is Test {
 
     /// ============ Inherited functionality ============
 
+    /// @notice Airdrop a token
+    /// @param to address receiving airdrop
+    function airdrop(address to) public {
+        return PROTOGRAVANFT.airdrop(to);
+    }
+
     /// @notice Mint a token
     function mint() public {
         return PROTOGRAVANFT.mint();

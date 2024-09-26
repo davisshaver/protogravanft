@@ -124,6 +124,25 @@ contract ProtoGravNFTTestContract is ProtoGravaNFTTest {
         assertEq(protogravanft.balanceOf(address(this)), 1);
     }
 
+    /// @notice Test that airdrop can only be called by owner
+    function testAirdrop() public {
+        // Collect Alice balance of tokens before mint
+        uint256 alicePreBalance = alice.tokenBalance();
+        // Mint approved token
+        protogravanft.airdrop(alice.getAddress());
+        // Collect Alice balance of tokens after mint
+        uint256 alicePostBalance = alice.tokenBalance();
+        assertEq(alicePreBalance, 0);
+        assertEq(alicePostBalance, 1);
+        assertEq(protogravanft.totalSupply(), 1);
+        assertEq(protogravanft.ownerOf(1), alice.getAddress());
+        vm.expectRevert(abi.encodeWithSignature("OnePerUser()"));
+        alice.mint();
+        charlieAddress = charlie.getAddress();
+        vm.expectRevert(abi.encodeWithSignature("NotOwner()"));
+        alice.airdrop(charlieAddress);
+    }
+
     /// @notice Allow Alice to mint a token for approved hash
     function testAliceMint() public {
         // Collect Alice balance of tokens before mint
